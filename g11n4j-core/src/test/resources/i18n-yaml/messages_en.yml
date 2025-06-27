@@ -1,0 +1,16 @@
+notification:
+  message:
+    count:
+      one: "You have {count} new notification"
+      other: "You have {count} new notifications"
+
+mail:
+  subject: Verification code to confirm your account on the website - {website}
+  body: Dear {fullName}, your verification code is {code}.
+  footer: Kindly Regards, {0} from the {1} Team.
+
+greeting:
+  _context:
+    gender:
+      male: Hello, Mr. {fullName}
+      female: Hello, Ms. {fullName}
