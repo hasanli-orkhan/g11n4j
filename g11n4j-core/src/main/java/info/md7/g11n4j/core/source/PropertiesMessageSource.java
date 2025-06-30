@@ -1,6 +1,7 @@
 package info.md7.g11n4j.core.source;
 
 import info.md7.g11n4j.core.exception.NoSuchMessageException;
+import info.md7.g11n4j.core.i18n.MessageContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,10 +67,49 @@ public class PropertiesMessageSource implements MessageSource {
     @Override
     public String getMessage(String key, Locale locale) throws NoSuchMessageException {
         Map<String, String> localeMessages = messages.getOrDefault(locale, messages.get(defaultLocale));
-        if (localeMessages == null || !localeMessages.containsKey(key)) {
+        if (localeMessages == null) {
             throw new NoSuchMessageException(key, locale);
         }
-        return localeMessages.getOrDefault(key, "[[" + key + "]]");
+        if (localeMessages.containsKey(key)) {
+            return localeMessages.get(key);
+        }
+        String baseKey = key + "._base";
+        if (localeMessages.containsKey(baseKey)) {
+            return localeMessages.get(baseKey);
+        }
+
+        throw new NoSuchMessageException(key, locale);
+    }
+
+    @Override
+    public String getMessage(String key, Locale locale, MessageContext context) throws NoSuchMessageException {
+        if (context == null || context.getContextMap().isEmpty()) {
+            return this.getMessage(key, locale);
+        }
+        Map<String, String> localeMessages = messages.getOrDefault(locale, messages.get(defaultLocale));
+        if (localeMessages == null) {
+            throw new NoSuchMessageException(key, locale);
+        }
+        for (Map.Entry<String, String> contextEntry : context.getContextMap().entrySet()) {
+            String contextKey = contextEntry.getKey();
+            String contextValue = contextEntry.getValue();
+
+            String specificKey = key + "." + contextKey + "." + contextValue;
+            if (localeMessages.containsKey(specificKey)) {
+                return localeMessages.get(specificKey);
+            }
+            String fallbackKey = key + "." + contextKey + ".other";
+            if (localeMessages.containsKey(fallbackKey)) {
+                return localeMessages.get(fallbackKey);
+            }
+        }
+
+        return this.getMessage(key, locale);
+    }
+
+    @Override
+    public Map<String, String> getPluralForms(String keyPrefix, Locale locale, MessageContext context) {
+        return Map.of();
     }
 
     @Override
