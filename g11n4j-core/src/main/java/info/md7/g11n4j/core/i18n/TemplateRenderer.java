@@ -1,4 +1,4 @@
-package info.md7.g11n4j.core.render;
+package info.md7.g11n4j.core.i18n;
 
 import java.util.HashMap;
 import java.util.Map;
