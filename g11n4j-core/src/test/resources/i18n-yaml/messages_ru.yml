@@ -11,6 +11,22 @@ mail:
   footer: С уважением и наилучшими, {0} команда {1}
 
 greeting:
+  _base: Здравствуйте, {fullName}
   gender:
     male: Здравствуйте, Г-н. {fullName}
     female: Здравствуйте, Г-жа. {fullName}
+
+push_notification:
+  _base:
+    one: "{fullName}, у вас {count} непрочитанное уведомление"
+    few: "{fullName}, у вас {count} непрочитанных уведомления"
+    many: "{fullName}, у вас {count} непрочитанных уведомлений"
+  gender:
+    male:
+      one: "Г-н {fullName}, у вас {count} непрочитанное уведомление"
+      few: "Г-н {fullName}, у вас {count} непрочитанных уведомления"
+      many: "Г-н {fullName}, у вас {count} непрочитанных уведомлений"
+    female:
+      one: "Г-жа {fullName}, у вас {count} непрочитанное уведомление"
+      few: "Г-жа {fullName}, у вас {count} непрочитанных уведомления"
+      many: "Г-жа {fullName}, у вас {count} непрочитанных уведомлений"

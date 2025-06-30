@@ -10,7 +10,19 @@ mail:
   footer: Kindly Regards, {0} from the {1} Team.
 
 greeting:
-  _context:
-    gender:
-      male: Hello, Mr. {fullName}
-      female: Hello, Ms. {fullName}
+  _base: Hello, {fullName}
+  gender:
+    male: Hello, Mr. {fullName}
+    female: Hello, Ms. {fullName}
+
+push_notification:
+  _base:
+    one: "{fullName}, you have {count} new push notification"
+    other: "{fullName}, you have {count} new push notifications"
+  gender:
+    male:
+      one: "Mr. {fullName}, you have {count} new push notification"
+      other: "Mr. {fullName}, you have {count} new push notifications"
+    female:
+      one: "Ms. {fullName}, you have {count} new push notification"
+      other: "Ms. {fullName}, you have {count} new push notifications"

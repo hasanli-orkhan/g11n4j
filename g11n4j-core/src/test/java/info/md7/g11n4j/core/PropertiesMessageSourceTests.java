@@ -34,6 +34,19 @@ public class PropertiesMessageSourceTests {
     }
 
     @Test
+    void whenRenderingGreetingWithContext_thenResultIsCorrect() {
+        String maleGreeting = messageResolver.get("greeting", Locale.ENGLISH)
+                .withContext("gender", "male")
+                .render("fullName", "John Smith");
+        String femaleGreeting = messageResolver.get("greeting", Locale.ENGLISH)
+                .withContext("gender", "female")
+                .render("fullName", "Jane Smith");
+
+        Assertions.assertEquals("Hello, Mr. John Smith", maleGreeting);
+        Assertions.assertEquals("Hello, Ms. Jane Smith", femaleGreeting);
+    }
+
+    @Test
     void whenRenderingBodyWithMultipleParametersWithMap_thenResultIsCorrect() {
         String randomToken = UUID.randomUUID().toString();
         String mailBodyEn = messageResolver.get("mail.body", Locale.ENGLISH)

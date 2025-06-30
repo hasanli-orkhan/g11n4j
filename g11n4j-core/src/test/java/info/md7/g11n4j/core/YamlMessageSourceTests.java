@@ -34,18 +34,18 @@ public class YamlMessageSourceTests {
         Assertions.assertEquals("Verification code to confirm your account on the website - example.com", mailSubjectEn);
     }
 
-//    @Test
-//    void whenRenderingGreetingWithContext_thenResultIsCorrect() {
-//        String maleContext = messageResolver.get("greeting", Locale.ENGLISH)
-//                .withContext("gender", "male")
-//                .render("fullName", "John Smith");
-//        String femaleContext = messageResolver.get("greeting", Locale.ENGLISH)
-//                .withContext("gender", "female")
-//                .render("fullName", "Jane Smith");
-//
-//        Assertions.assertEquals("Hello, Mr. John Smith", maleContext);
-//        Assertions.assertEquals("Hello, Ms. Jane Smith", femaleContext);
-//    }
+    @Test
+    void whenRenderingGreetingWithContext_thenResultIsCorrect() {
+        String maleGreeting = messageResolver.get("greeting", Locale.ENGLISH)
+                .withContext("gender", "male")
+                .render("fullName", "John Smith");
+        String femaleGreeting = messageResolver.get("greeting", Locale.ENGLISH)
+                .withContext("gender", "female")
+                .render("fullName", "Jane Smith");
+
+        Assertions.assertEquals("Hello, Mr. John Smith", maleGreeting);
+        Assertions.assertEquals("Hello, Ms. Jane Smith", femaleGreeting);
+    }
 
     @Test
     void whenRenderingBodyWithMultipleParametersWithMap_thenResultIsCorrect() {
@@ -94,6 +94,22 @@ public class YamlMessageSourceTests {
         Assertions.assertEquals("У вас 2 непрочитанных уведомления", notification2Ru);
         Assertions.assertEquals("У вас 91 непрочитанное уведомление", notification3Ru);
         Assertions.assertEquals("У вас 100 непрочитанных уведомлений", notification4Ru);
+    }
+
+    @Test
+    void whenRenderingBodyWithPluralizationAndContextInEnglish_thenResultIsCorrect() {
+        String singleNotificationEnMale = messageResolver.getPlural(
+                "push_notification", 1, Locale.ENGLISH)
+                .withContext("gender", "male")
+                .render("fullName", "John Smith");
+
+        String notificationsEnMale = messageResolver.getPlural(
+                "push_notification", 15, Locale.ENGLISH)
+                .withContext("gender", "male")
+                .render("fullName", "John Smith");
+
+        Assertions.assertEquals("Mr. John Smith, you have 1 new push notification", singleNotificationEnMale);
+        Assertions.assertEquals("Mr. John Smith, you have 15 new push notifications", notificationsEnMale);
     }
 
 }
