@@ -11,12 +11,12 @@ import java.util.Locale;
 @ConfigurationProperties(prefix = "spring.g11n")
 public class G11nProperties {
 
-    private SourceType type /*= SourceType.YAML*/; // todo
+    private SourceType type = SourceType.PROPERTIES;
     private String baseDirectory = "i18n";
     private String fileBaseName = "messages";
     private String localeSeparator = "_";
-    private String fileExtension = "yml";
-    private Locale defaultLocale;
+    private String fileExtension = "properties";
+    private Locale defaultLocale = Locale.ENGLISH;
     private List<Locale> locales;
 
     public SourceType getType() {

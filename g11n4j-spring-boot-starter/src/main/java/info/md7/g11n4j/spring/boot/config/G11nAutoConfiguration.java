@@ -37,15 +37,15 @@ public class G11nAutoConfiguration {
                     properties.getDefaultLocale(),
                     properties.getLocales()
             );
-            // todo add more types
+            // todo add more source types
             default -> throw new IllegalArgumentException("Unsupported message source type: " + sourceType);
         };
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public MessageResolver messageResolver() {
-        return new MessageResolver(messageSource());
+    public MessageResolver messageResolver(MessageSource g11n4jMessageSource) {
+        return new MessageResolver(g11n4jMessageSource);
     }
 
 }
