@@ -27,6 +27,7 @@
         <junit.version>5.10.3</junit.version>
         <picocli.version>4.7.7</picocli.version>
         <gettext-commons.version>0.9.8</gettext-commons.version>
+        <jackson.version>2.18.2</jackson.version>
 
         <g11n-core.version>1.0.0</g11n-core.version>
     </properties>
@@ -64,6 +65,12 @@
                 <groupId>com.googlecode.gettext-commons</groupId>
                 <artifactId>gettext-commons</artifactId>
                 <version>${gettext-commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>

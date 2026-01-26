@@ -7,6 +7,7 @@ public class MessageValidatorFactory {
             case "properties" -> new PropertiesMessageValidator(basePath);
             case "yml", "yaml" -> new YamlMessageValidator(basePath);
             case "po", "pot", "mo" -> new GettextMessageValidator(basePath);
+            case "json" -> new JsonMessageValidator(basePath);
             default -> throw new IllegalArgumentException("Unsupported file extension '" + extension + "'.");
         };
     }
