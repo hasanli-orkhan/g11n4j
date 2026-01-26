@@ -6,6 +6,7 @@ public class MessageValidatorFactory {
         return switch (extension.toLowerCase()) {
             case "properties" -> new PropertiesMessageValidator(basePath);
             case "yml", "yaml" -> new YamlMessageValidator(basePath);
+            case "po", "pot", "mo" -> new GettextMessageValidator(basePath);
             default -> throw new IllegalArgumentException("Unsupported file extension '" + extension + "'.");
         };
     }
