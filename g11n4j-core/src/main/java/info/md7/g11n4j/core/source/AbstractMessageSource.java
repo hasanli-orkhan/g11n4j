@@ -1,13 +1,16 @@
 package info.md7.g11n4j.core.source;
 
+import info.md7.g11n4j.core.cache.MessageCache;
 import info.md7.g11n4j.core.exception.NoSuchMessageException;
 import info.md7.g11n4j.core.i18n.MessageContext;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractMessageSource implements MessageSource {
 
-    protected final Map<Locale, Map<String, String>> messages = new HashMap<>();
+    protected final Map<Locale, Map<String, String>> messages = new ConcurrentHashMap<>();
+    protected final MessageCache messageCache = new MessageCache(1000);
 
     /**
      * Base directory for message files (e.g., "i18n").
@@ -25,7 +28,7 @@ public abstract class AbstractMessageSource implements MessageSource {
     protected final String fileBaseName;
 
     /**
-     * File extension (must be "properties").
+     * File extension for message files.
      */
     protected final String fileExtension;
 
@@ -44,6 +47,25 @@ public abstract class AbstractMessageSource implements MessageSource {
             String localeSeparator, String fileExtension,
             Locale defaultLocale, List<Locale> supportedLocales
     ) {
+        if (baseDirectory == null || baseDirectory.trim().isEmpty()) {
+            throw new IllegalArgumentException("baseDirectory cannot be null or empty");
+        }
+        if (fileBaseName == null || fileBaseName.trim().isEmpty()) {
+            throw new IllegalArgumentException("fileBaseName cannot be null or empty");
+        }
+        if (localeSeparator == null || localeSeparator.trim().isEmpty()) {
+            throw new IllegalArgumentException("localeSeparator cannot be null or empty");
+        }
+        if (fileExtension == null || fileExtension.trim().isEmpty()) {
+            throw new IllegalArgumentException("fileExtension cannot be null or empty");
+        }
+        if (defaultLocale == null) {
+            throw new IllegalArgumentException("defaultLocale cannot be null");
+        }
+        if (supportedLocales == null || supportedLocales.isEmpty()) {
+            throw new IllegalArgumentException("supportedLocales cannot be null or empty");
+        }
+
         this.baseDirectory = baseDirectory;
         this.fileBaseName = fileBaseName;
         this.localeSeparator = localeSeparator;
@@ -57,6 +79,13 @@ public abstract class AbstractMessageSource implements MessageSource {
 
     @Override
     public String getMessage(String key, Locale locale) throws NoSuchMessageException {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("key cannot be null or empty");
+        }
+        if (locale == null) {
+            throw new IllegalArgumentException("locale cannot be null");
+        }
+
         Map<String, String> localeMessages = messages.getOrDefault(locale, messages.get(defaultLocale));
         if (localeMessages == null) {
             throw new NoSuchMessageException(key, locale);
@@ -75,8 +104,22 @@ public abstract class AbstractMessageSource implements MessageSource {
 
     @Override
     public String getMessage(String key, Locale locale, MessageContext context) throws NoSuchMessageException {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("key cannot be null or empty");
+        }
+        if (locale == null) {
+            throw new IllegalArgumentException("locale cannot be null");
+        }
+
         if (context == null || context.getContextMap().isEmpty()) {
             return this.getMessage(key, locale);
+        }
+
+        // Build cache key
+        String cacheKey = buildCacheKey(key, locale, context);
+        String cachedMessage = messageCache.get(cacheKey);
+        if (cachedMessage != null) {
+            return cachedMessage;
         }
 
         Map<String, String> localeMessages = messages.getOrDefault(locale, messages.get(defaultLocale));
@@ -89,16 +132,29 @@ public abstract class AbstractMessageSource implements MessageSource {
 
             String message = localeMessages.get(key + "." + contextKey + "." + contextValue);
             if (message != null) {
+                messageCache.put(cacheKey, message);
                 return message;
             }
 
             message = localeMessages.get(key + "." + contextKey + ".other");
             if (message != null) {
+                messageCache.put(cacheKey, message);
                 return message;
             }
         }
 
-        return this.getMessage(key, locale);
+        String fallbackMessage = this.getMessage(key, locale);
+        messageCache.put(cacheKey, fallbackMessage);
+        return fallbackMessage;
+    }
+
+    private String buildCacheKey(String key, Locale locale, MessageContext context) {
+        StringBuilder sb = new StringBuilder(key);
+        sb.append(":").append(locale.toLanguageTag());
+        for (Map.Entry<String, String> entry : context.getContextMap().entrySet()) {
+            sb.append(":").append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        return sb.toString();
     }
 
     @Override
@@ -108,6 +164,13 @@ public abstract class AbstractMessageSource implements MessageSource {
 
     @Override
     public Map<String, String> getPluralForms(String keyPrefix, Locale locale, MessageContext context) {
+        if (keyPrefix == null || keyPrefix.trim().isEmpty()) {
+            throw new IllegalArgumentException("keyPrefix cannot be null or empty");
+        }
+        if (locale == null) {
+            throw new IllegalArgumentException("locale cannot be null");
+        }
+
         Map<String, String> localeMessages = messages.getOrDefault(locale, messages.get(defaultLocale));
         if (localeMessages == null) {
             return Collections.emptyMap();

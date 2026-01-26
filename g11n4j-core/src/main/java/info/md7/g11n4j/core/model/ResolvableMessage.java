@@ -15,15 +15,23 @@ public class ResolvableMessage {
     private final MessageContext context;
 
     public ResolvableMessage(String key, Locale locale, MessageSource messageSource) {
+        this(key, locale, messageSource, new MessageContext());
+    }
+
+    private ResolvableMessage(String key, Locale locale, MessageSource messageSource, MessageContext context) {
         this.key = key;
         this.locale = locale;
         this.messageSource = messageSource;
-        this.context = new MessageContext();
+        this.context = context;
     }
 
     public ResolvableMessage withContext(String key, String value) {
-        this.context.set(key, value);
-        return this;
+        MessageContext newContext = new MessageContext();
+        for (Map.Entry<String, String> entry : this.context.getContextMap().entrySet()) {
+            newContext.set(entry.getKey(), entry.getValue());
+        }
+        newContext.set(key, value);
+        return new ResolvableMessage(this.key, this.locale, this.messageSource, newContext);
     }
 
     public String render(Map<String, Object> args) {

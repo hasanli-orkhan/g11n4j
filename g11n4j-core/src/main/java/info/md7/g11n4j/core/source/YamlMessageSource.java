@@ -1,5 +1,6 @@
 package info.md7.g11n4j.core.source;
 
+import info.md7.g11n4j.core.exception.MessageLoadException;
 import info.md7.g11n4j.core.model.SourceType;
 import org.yaml.snakeyaml.Yaml;
 
@@ -36,7 +37,7 @@ public class YamlMessageSource extends AbstractMessageSource {
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Failed to load: " + filename, e);
+                throw new MessageLoadException(filename, e);
             }
         }
     }

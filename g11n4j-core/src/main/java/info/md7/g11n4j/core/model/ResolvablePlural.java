@@ -18,16 +18,24 @@ public class ResolvablePlural {
     private final MessageContext context;
 
     public ResolvablePlural(String keyPrefix, int count, Locale locale, MessageSource messageSource) {
+        this(keyPrefix, count, locale, messageSource, new MessageContext());
+    }
+
+    private ResolvablePlural(String keyPrefix, int count, Locale locale, MessageSource messageSource, MessageContext context) {
         this.keyPrefix = keyPrefix;
         this.count = count;
         this.locale = locale;
         this.messageSource = messageSource;
-        this.context = new MessageContext();
+        this.context = context;
     }
 
     public ResolvablePlural withContext(String key, String value) {
-        this.context.set(key, value);
-        return this;
+        MessageContext newContext = new MessageContext();
+        for (Map.Entry<String, String> entry : this.context.getContextMap().entrySet()) {
+            newContext.set(entry.getKey(), entry.getValue());
+        }
+        newContext.set(key, value);
+        return new ResolvablePlural(this.keyPrefix, this.count, this.locale, this.messageSource, newContext);
     }
 
     public String render(Object... variables) {

@@ -1,9 +1,12 @@
 package info.md7.g11n4j.core.i18n;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TemplateRenderer {
+
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([^}]+)}");
 
     private final String template;
     private final Map<String, Object> defaultArgs;
@@ -18,11 +21,11 @@ public class TemplateRenderer {
     }
 
     public String render(Object[] variables) {
-        String result = template;
+        Map<String, Object> indexedArgs = new HashMap<>();
         for (int i = 0; i < variables.length; i++) {
-            result = result.replace("{" + i + "}", String.valueOf(variables[i]));
+            indexedArgs.put(String.valueOf(i), variables[i]);
         }
-        return result;
+        return render(indexedArgs);
     }
 
     public String render(String key, Object value) {
@@ -36,10 +39,23 @@ public class TemplateRenderer {
     public String render(Map<String, Object> args) {
         Map<String, Object> merged = new HashMap<>(defaultArgs);
         merged.putAll(args);
-        String result = template;
-        for (Map.Entry<String, Object> entry : merged.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", String.valueOf(entry.getValue()));
+
+        // Sort placeholders by length in descending order to avoid overlapping issues
+        // e.g., replace {count} before {c} to prevent {c} from partially matching {count}
+        List<String> sortedKeys = new ArrayList<>(merged.keySet());
+        sortedKeys.sort((a, b) -> Integer.compare(b.length(), a.length()));
+
+        StringBuffer result = new StringBuffer();
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);
+
+        while (matcher.find()) {
+            String placeholder = matcher.group(1);
+            Object value = merged.get(placeholder);
+            String replacement = value != null ? String.valueOf(value) : matcher.group(0);
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
         }
-        return result;
+        matcher.appendTail(result);
+
+        return result.toString();
     }
 }
