@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="notification.message.count.one">
+                <source>You have {count} new notification</source>
+                <target>Vous avez {count} nouvelle notification</target>
+            </trans-unit>
+            <trans-unit id="notification.message.count.other">
+                <source>You have {count} new notifications</source>
+                <target>Vous avez {count} nouvelles notifications</target>
+            </trans-unit>
+            <trans-unit id="mail.subject">
+                <source>Verification code to confirm your account on the website - {website}</source>
+                <target>Code de vérification pour confirmer votre compte sur le site - {website}</target>
+            </trans-unit>
+            <trans-unit id="mail.body">
+                <source>Dear {fullName}, your verification code is {code}.</source>
+                <target>Cher(ère) {fullName}, votre code de vérification est {code}.</target>
+            </trans-unit>
+            <trans-unit id="mail.footer">
+                <source>Kindly Regards, {0} from the {1} Team.</source>
+                <target>Cordialement, {0} de l'équipe {1}.</target>
+            </trans-unit>
+            <trans-unit id="greeting._base">
+                <source>Hello, {fullName}</source>
+                <target>Bonjour, {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.male">
+                <source>Hello, Mr. {fullName}</source>
+                <target>Bonjour, M. {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.female">
+                <source>Hello, Ms. {fullName}</source>
+                <target>Bonjour, Mme {fullName}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

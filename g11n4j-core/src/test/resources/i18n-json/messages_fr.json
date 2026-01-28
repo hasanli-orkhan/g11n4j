@@ -1,0 +1,22 @@
+{
+  "notification": {
+    "message": {
+      "count": {
+        "one": "Vous avez {count} nouvelle notification",
+        "other": "Vous avez {count} nouvelles notifications"
+      }
+    }
+  },
+  "mail": {
+    "subject": "Code de vérification pour confirmer votre compte sur le site - {website}",
+    "body": "Cher(ère) {fullName}, votre code de vérification est {code}.",
+    "footer": "Cordialement, {0} de l'équipe {1}."
+  },
+  "greeting": {
+    "_base": "Bonjour, {fullName}",
+    "gender": {
+      "male": "Bonjour, M. {fullName}",
+      "female": "Bonjour, Mme {fullName}"
+    }
+  }
+}

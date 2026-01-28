@@ -1,0 +1,41 @@
+# French translations for g11n4j package.
+# Copyright (C) 2026 Orkhan Hasanli
+# This file is distributed under the same license as the g11n4j package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: g11n4j 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-27 00:00+0000\n"
+"PO-Revision-Date: 2026-01-27 00:00+0000\n"
+"Last-Translator: Orkhan Hasanli <mail@md7.info>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "notification.message.count.one"
+msgstr "Vous avez {count} nouvelle notification"
+
+msgid "notification.message.count.other"
+msgstr "Vous avez {count} nouvelles notifications"
+
+msgid "mail.subject"
+msgstr "Code de vérification pour confirmer votre compte sur le site - {website}"
+
+msgid "mail.body"
+msgstr "Cher(ère) {fullName}, votre code de vérification est {code}."
+
+msgid "mail.footer"
+msgstr "Cordialement, {0} de l'équipe {1}."
+
+msgid "greeting._base"
+msgstr "Bonjour, {fullName}"
+
+msgid "greeting.gender.male"
+msgstr "Bonjour, M. {fullName}"
+
+msgid "greeting.gender.female"
+msgstr "Bonjour, Mme {fullName}"

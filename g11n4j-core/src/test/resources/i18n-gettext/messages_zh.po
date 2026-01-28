@@ -1,0 +1,38 @@
+# Chinese translations for g11n4j package.
+# Copyright (C) 2026 Orkhan Hasanli
+# This file is distributed under the same license as the g11n4j package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: g11n4j 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-27 00:00+0000\n"
+"PO-Revision-Date: 2026-01-27 00:00+0000\n"
+"Last-Translator: Orkhan Hasanli <mail@md7.info>\n"
+"Language-Team: Chinese\n"
+"Language: zh\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "notification.message.count.other"
+msgstr "您有 {count} 条新通知"
+
+msgid "mail.subject"
+msgstr "确认您在网站上的帐户的验证码 - {website}"
+
+msgid "mail.body"
+msgstr "尊敬的 {fullName}，您的验证码是 {code}。"
+
+msgid "mail.footer"
+msgstr "此致敬礼，{1} 团队的 {0}。"
+
+msgid "greeting._base"
+msgstr "您好，{fullName}"
+
+msgid "greeting.gender.male"
+msgstr "您好，{fullName} 先生"
+
+msgid "greeting.gender.female"
+msgstr "您好，{fullName} 女士"

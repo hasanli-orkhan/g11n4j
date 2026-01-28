@@ -15,10 +15,13 @@ public class XliffMessageSourceTests {
 
     private static MessageResolver messageResolver;
     private static Locale russianLocale = Locale.forLanguageTag("ru");
+    private static Locale chineseLocale = Locale.forLanguageTag("zh");
+    private static Locale germanLocale = Locale.forLanguageTag("de");
+    private static Locale frenchLocale = Locale.forLanguageTag("fr");
 
     @BeforeAll
     static void setup() {
-        var supportedLocales = List.of(Locale.ENGLISH, russianLocale);
+        var supportedLocales = List.of(Locale.ENGLISH, russianLocale, chineseLocale, germanLocale, frenchLocale);
         var messageSource = new XliffMessageSource(
                 "i18n-xliff", "messages", "_",
                 "xlf", Locale.ENGLISH, supportedLocales
@@ -94,5 +97,56 @@ public class XliffMessageSourceTests {
         Assertions.assertEquals("У вас 2 непрочитанных уведомления", notification2Ru);
         Assertions.assertEquals("У вас 91 непрочитанное уведомление", notification3Ru);
         Assertions.assertEquals("У вас 100 непрочитанных уведомлений", notification4Ru);
+    }
+
+    @Test
+    void whenRenderingInChinese_thenResultIsCorrect() {
+        String mailSubjectZh = messageResolver.get("mail.subject", chineseLocale)
+                .render("website", "example.com");
+        String greetingZh = messageResolver.get("greeting", chineseLocale)
+                .withContext("gender", "male")
+                .render("fullName", "李明");
+        String notificationZh = messageResolver.getPlural(
+                "notification.message.count", 5, chineseLocale, Map.of());
+
+        Assertions.assertEquals("确认您在网站上的帐户的验证码 - example.com", mailSubjectZh);
+        Assertions.assertEquals("您好，李明 先生", greetingZh);
+        Assertions.assertEquals("您有 5 条新通知", notificationZh);
+    }
+
+    @Test
+    void whenRenderingInGerman_thenResultIsCorrect() {
+        String mailSubjectDe = messageResolver.get("mail.subject", germanLocale)
+                .render("website", "beispiel.de");
+        String greetingDe = messageResolver.get("greeting", germanLocale)
+                .withContext("gender", "female")
+                .render("fullName", "Schmidt");
+        String notificationSingleDe = messageResolver.getPlural(
+                "notification.message.count", 1, germanLocale, Map.of());
+        String notificationPluralDe = messageResolver.getPlural(
+                "notification.message.count", 5, germanLocale, Map.of());
+
+        Assertions.assertEquals("Bestätigungscode zur Bestätigung Ihres Kontos auf der Website - beispiel.de", mailSubjectDe);
+        Assertions.assertEquals("Hallo, Frau Schmidt", greetingDe);
+        Assertions.assertEquals("Sie haben 1 neue Benachrichtigung", notificationSingleDe);
+        Assertions.assertEquals("Sie haben 5 neue Benachrichtigungen", notificationPluralDe);
+    }
+
+    @Test
+    void whenRenderingInFrench_thenResultIsCorrect() {
+        String mailBodyFr = messageResolver.get("mail.body", frenchLocale)
+                .render(Map.of("fullName", "Dupont", "code", "ABC123"));
+        String greetingFr = messageResolver.get("greeting", frenchLocale)
+                .withContext("gender", "male")
+                .render("fullName", "Martin");
+        String notificationSingleFr = messageResolver.getPlural(
+                "notification.message.count", 1, frenchLocale, Map.of());
+        String notificationPluralFr = messageResolver.getPlural(
+                "notification.message.count", 10, frenchLocale, Map.of());
+
+        Assertions.assertEquals("Cher(ère) Dupont, votre code de vérification est ABC123.", mailBodyFr);
+        Assertions.assertEquals("Bonjour, M. Martin", greetingFr);
+        Assertions.assertEquals("Vous avez 1 nouvelle notification", notificationSingleFr);
+        Assertions.assertEquals("Vous avez 10 nouvelles notifications", notificationPluralFr);
     }
 }

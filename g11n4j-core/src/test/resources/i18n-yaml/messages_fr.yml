@@ -1,0 +1,28 @@
+notification:
+  message:
+    count:
+      one: "Vous avez {count} nouvelle notification"
+      other: "Vous avez {count} nouvelles notifications"
+
+mail:
+  subject: Code de vérification pour confirmer votre compte sur le site - {website}
+  body: Cher(ère) {fullName}, votre code de vérification est {code}.
+  footer: Cordialement, {0} de l'équipe {1}.
+
+greeting:
+  _base: Bonjour, {fullName}
+  gender:
+    male: Bonjour, M. {fullName}
+    female: Bonjour, Mme {fullName}
+
+push_notification:
+  _base:
+    one: "{fullName}, vous avez {count} nouvelle notification push"
+    other: "{fullName}, vous avez {count} nouvelles notifications push"
+  gender:
+    male:
+      one: "M. {fullName}, vous avez {count} nouvelle notification push"
+      other: "M. {fullName}, vous avez {count} nouvelles notifications push"
+    female:
+      one: "Mme {fullName}, vous avez {count} nouvelle notification push"
+      other: "Mme {fullName}, vous avez {count} nouvelles notifications push"

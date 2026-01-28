@@ -1,0 +1,28 @@
+notification:
+  message:
+    count:
+      one: "Sie haben {count} neue Benachrichtigung"
+      other: "Sie haben {count} neue Benachrichtigungen"
+
+mail:
+  subject: Bestätigungscode zur Bestätigung Ihres Kontos auf der Website - {website}
+  body: Sehr geehrte(r) {fullName}, Ihr Bestätigungscode lautet {code}.
+  footer: Mit freundlichen Grüßen, {0} vom {1}-Team.
+
+greeting:
+  _base: Hallo, {fullName}
+  gender:
+    male: Hallo, Herr {fullName}
+    female: Hallo, Frau {fullName}
+
+push_notification:
+  _base:
+    one: "{fullName}, Sie haben {count} neue Push-Benachrichtigung"
+    other: "{fullName}, Sie haben {count} neue Push-Benachrichtigungen"
+  gender:
+    male:
+      one: "Herr {fullName}, Sie haben {count} neue Push-Benachrichtigung"
+      other: "Herr {fullName}, Sie haben {count} neue Push-Benachrichtigungen"
+    female:
+      one: "Frau {fullName}, Sie haben {count} neue Push-Benachrichtigung"
+      other: "Frau {fullName}, Sie haben {count} neue Push-Benachrichtigungen"

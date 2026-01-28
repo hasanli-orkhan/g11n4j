@@ -1,0 +1,41 @@
+# German translations for g11n4j package.
+# Copyright (C) 2026 Orkhan Hasanli
+# This file is distributed under the same license as the g11n4j package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: g11n4j 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-27 00:00+0000\n"
+"PO-Revision-Date: 2026-01-27 00:00+0000\n"
+"Last-Translator: Orkhan Hasanli <mail@md7.info>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "notification.message.count.one"
+msgstr "Sie haben {count} neue Benachrichtigung"
+
+msgid "notification.message.count.other"
+msgstr "Sie haben {count} neue Benachrichtigungen"
+
+msgid "mail.subject"
+msgstr "Bestätigungscode zur Bestätigung Ihres Kontos auf der Website - {website}"
+
+msgid "mail.body"
+msgstr "Sehr geehrte(r) {fullName}, Ihr Bestätigungscode lautet {code}."
+
+msgid "mail.footer"
+msgstr "Mit freundlichen Grüßen, {0} vom {1}-Team."
+
+msgid "greeting._base"
+msgstr "Hallo, {fullName}"
+
+msgid "greeting.gender.male"
+msgstr "Hallo, Herr {fullName}"
+
+msgid "greeting.gender.female"
+msgstr "Hallo, Frau {fullName}"

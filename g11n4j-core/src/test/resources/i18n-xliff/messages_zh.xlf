@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="zh" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="notification.message.count.other">
+                <source>You have {count} new notifications</source>
+                <target>您有 {count} 条新通知</target>
+            </trans-unit>
+            <trans-unit id="mail.subject">
+                <source>Verification code to confirm your account on the website - {website}</source>
+                <target>确认您在网站上的帐户的验证码 - {website}</target>
+            </trans-unit>
+            <trans-unit id="mail.body">
+                <source>Dear {fullName}, your verification code is {code}.</source>
+                <target>尊敬的 {fullName}，您的验证码是 {code}。</target>
+            </trans-unit>
+            <trans-unit id="mail.footer">
+                <source>Kindly Regards, {0} from the {1} Team.</source>
+                <target>此致敬礼，{1} 团队的 {0}。</target>
+            </trans-unit>
+            <trans-unit id="greeting._base">
+                <source>Hello, {fullName}</source>
+                <target>您好，{fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.male">
+                <source>Hello, Mr. {fullName}</source>
+                <target>您好，{fullName} 先生</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.female">
+                <source>Hello, Ms. {fullName}</source>
+                <target>您好，{fullName} 女士</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

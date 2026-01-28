@@ -1,0 +1,24 @@
+notification:
+  message:
+    count:
+      other: "您有 {count} 条新通知"
+
+mail:
+  subject: 确认您在网站上的帐户的验证码 - {website}
+  body: 尊敬的 {fullName}，您的验证码是 {code}。
+  footer: 此致敬礼，{1} 团队的 {0}。
+
+greeting:
+  _base: 您好，{fullName}
+  gender:
+    male: 您好，{fullName} 先生
+    female: 您好，{fullName} 女士
+
+push_notification:
+  _base:
+    other: "{fullName}，您有 {count} 条新推送通知"
+  gender:
+    male:
+      other: "{fullName} 先生，您有 {count} 条新推送通知"
+    female:
+      other: "{fullName} 女士，您有 {count} 条新推送通知"

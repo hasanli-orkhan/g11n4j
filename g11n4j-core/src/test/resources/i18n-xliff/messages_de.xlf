@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="notification.message.count.one">
+                <source>You have {count} new notification</source>
+                <target>Sie haben {count} neue Benachrichtigung</target>
+            </trans-unit>
+            <trans-unit id="notification.message.count.other">
+                <source>You have {count} new notifications</source>
+                <target>Sie haben {count} neue Benachrichtigungen</target>
+            </trans-unit>
+            <trans-unit id="mail.subject">
+                <source>Verification code to confirm your account on the website - {website}</source>
+                <target>Bestätigungscode zur Bestätigung Ihres Kontos auf der Website - {website}</target>
+            </trans-unit>
+            <trans-unit id="mail.body">
+                <source>Dear {fullName}, your verification code is {code}.</source>
+                <target>Sehr geehrte(r) {fullName}, Ihr Bestätigungscode lautet {code}.</target>
+            </trans-unit>
+            <trans-unit id="mail.footer">
+                <source>Kindly Regards, {0} from the {1} Team.</source>
+                <target>Mit freundlichen Grüßen, {0} vom {1}-Team.</target>
+            </trans-unit>
+            <trans-unit id="greeting._base">
+                <source>Hello, {fullName}</source>
+                <target>Hallo, {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.male">
+                <source>Hello, Mr. {fullName}</source>
+                <target>Hallo, Herr {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.female">
+                <source>Hello, Ms. {fullName}</source>
+                <target>Hallo, Frau {fullName}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
