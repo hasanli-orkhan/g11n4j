@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="ru" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="notification.message.count.one">
+                <source>You have {count} new notification</source>
+                <target>У вас {count} непрочитанное уведомление</target>
+            </trans-unit>
+            <trans-unit id="notification.message.count.few">
+                <source>You have {count} new notifications</source>
+                <target>У вас {count} непрочитанных уведомления</target>
+            </trans-unit>
+            <trans-unit id="notification.message.count.many">
+                <source>You have {count} new notifications</source>
+                <target>У вас {count} непрочитанных уведомлений</target>
+            </trans-unit>
+            <trans-unit id="mail.subject">
+                <source>Verification code to confirm your account on the website - {website}</source>
+                <target>Код подтверждения для вашего аккаунта на сайте - {website}</target>
+            </trans-unit>
+            <trans-unit id="mail.body">
+                <source>Dear {fullName}, your verification code is {code}.</source>
+                <target>Уважаемый {fullName}, ваш код подтверждения {code}.</target>
+            </trans-unit>
+            <trans-unit id="mail.footer">
+                <source>Kindly Regards, {0} from the {1} Team.</source>
+                <target>С уважением, {0} из команды {1}.</target>
+            </trans-unit>
+            <trans-unit id="greeting._base">
+                <source>Hello, {fullName}</source>
+                <target>Здравствуйте, {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.male">
+                <source>Hello, Mr. {fullName}</source>
+                <target>Здравствуйте, г-н {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.female">
+                <source>Hello, Ms. {fullName}</source>
+                <target>Здравствуйте, г-жа {fullName}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

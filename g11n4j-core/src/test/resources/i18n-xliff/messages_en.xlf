@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="notification.message.count.one">
+                <source>You have {count} new notification</source>
+                <target>You have {count} new notification</target>
+            </trans-unit>
+            <trans-unit id="notification.message.count.other">
+                <source>You have {count} new notifications</source>
+                <target>You have {count} new notifications</target>
+            </trans-unit>
+            <trans-unit id="mail.subject">
+                <source>Verification code to confirm your account on the website - {website}</source>
+                <target>Verification code to confirm your account on the website - {website}</target>
+            </trans-unit>
+            <trans-unit id="mail.body">
+                <source>Dear {fullName}, your verification code is {code}.</source>
+                <target>Dear {fullName}, your verification code is {code}.</target>
+            </trans-unit>
+            <trans-unit id="mail.footer">
+                <source>Kindly Regards, {0} from the {1} Team.</source>
+                <target>Kindly Regards, {0} from the {1} Team.</target>
+            </trans-unit>
+            <trans-unit id="greeting._base">
+                <source>Hello, {fullName}</source>
+                <target>Hello, {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.male">
+                <source>Hello, Mr. {fullName}</source>
+                <target>Hello, Mr. {fullName}</target>
+            </trans-unit>
+            <trans-unit id="greeting.gender.female">
+                <source>Hello, Ms. {fullName}</source>
+                <target>Hello, Ms. {fullName}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
