@@ -7,8 +7,8 @@ public enum SourceType {
     YAML(List.of("yml", "yaml")),
     PROPERTIES(List.of("properties")),
     GETTEXT(List.of("pot", "po", "mo")),
-    JSON(List.of("json"));
-    // todo add missing source types (XLIFF, TMX, RDBMS, NoSQL)
+    JSON(List.of("json")),
+    XLIFF(List.of("xlf", "xliff"));
 
     private final List<String> extensions;
 
