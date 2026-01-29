@@ -15,4 +15,8 @@ public interface MessageSource {
     Map<String, String> getPluralForms(String keyPrefix, Locale locale);
 
     Map<String, String> getPluralForms(String keyPrefix, Locale locale, MessageContext context);
+
+    void reload();
+
+    void reload(Locale locale);
 }
