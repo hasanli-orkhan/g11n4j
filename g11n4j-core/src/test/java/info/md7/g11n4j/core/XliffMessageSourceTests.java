@@ -18,10 +18,11 @@ public class XliffMessageSourceTests {
     private static Locale chineseLocale = Locale.forLanguageTag("zh");
     private static Locale germanLocale = Locale.forLanguageTag("de");
     private static Locale frenchLocale = Locale.forLanguageTag("fr");
+    private static Locale usEnglishLocale = Locale.forLanguageTag("en-US");
 
     @BeforeAll
     static void setup() {
-        var supportedLocales = List.of(Locale.ENGLISH, russianLocale, chineseLocale, germanLocale, frenchLocale);
+        var supportedLocales = List.of(Locale.ENGLISH, usEnglishLocale, russianLocale, chineseLocale, germanLocale, frenchLocale);
         var messageSource = new XliffMessageSource(
                 "i18n-xliff", "messages", "_",
                 "xlf", Locale.ENGLISH, supportedLocales
@@ -80,6 +81,34 @@ public class XliffMessageSourceTests {
 
         Assertions.assertEquals("You have 1 new notification", singleNotificationEn);
         Assertions.assertEquals("You have 15 new notifications", notificationsEn);
+    }
+
+    @Test
+    void whenRenderingPluralWithIndexedArgs_thenResultIsCorrect() {
+        String singleItem = messageResolver.getPlural("items.count", 1, Locale.ENGLISH)
+                .render(1);
+        String multipleItems = messageResolver.getPlural("items.count", 3, Locale.ENGLISH)
+                .render(3);
+
+        Assertions.assertEquals("Item 1", singleItem);
+        Assertions.assertEquals("Items 3", multipleItems);
+    }
+
+    @Test
+    void whenRenderingWithRegionSpecificLocale_thenRegionFileIsUsed() {
+        String mailSubjectUs = messageResolver.get("mail.subject", usEnglishLocale)
+                .render("website", "example.com");
+
+        Assertions.assertEquals("US verification code for example.com", mailSubjectUs);
+    }
+
+    @Test
+    void whenRegionFileMissing_thenLanguageFallbackIsUsed() {
+        Locale ukEnglish = Locale.forLanguageTag("en-GB");
+        String mailSubjectUk = messageResolver.get("mail.subject", ukEnglish)
+                .render("website", "example.com");
+
+        Assertions.assertEquals("Verification code to confirm your account on the website - example.com", mailSubjectUk);
     }
 
     @Test

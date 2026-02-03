@@ -45,16 +45,18 @@ public class XliffMessageSource extends AbstractMessageSource {
         factory.setNamespaceAware(true);
 
         for (Locale locale : supportedLocales) {
-            String filename = baseDirectory + "/" + fileBaseName + localeSeparator + locale.getLanguage() + "." + fileExtension;
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                if (is != null) {
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    Document doc = builder.parse(is);
-                    Map<String, String> flatMap = parseXliffDocument(doc);
-                    messages.put(locale, flatMap);
+            for (String filename : buildCandidateFilenames(locale)) {
+                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
+                    if (is != null) {
+                        DocumentBuilder builder = factory.newDocumentBuilder();
+                        Document doc = builder.parse(is);
+                        Map<String, String> flatMap = parseXliffDocument(doc);
+                        messages.put(locale, flatMap);
+                        break;
+                    }
+                } catch (Exception e) {
+                    throw new MessageLoadException(filename, e);
                 }
-            } catch (Exception e) {
-                throw new MessageLoadException(filename, e);
             }
         }
     }

@@ -4,6 +4,11 @@ notification:
       one: "You have {count} new notification"
       other: "You have {count} new notifications"
 
+items:
+  count:
+    one: "Item {0}"
+    other: "Items {0}"
+
 mail:
   subject: Verification code to confirm your account on the website - {website}
   body: Dear {fullName}, your verification code is {code}.

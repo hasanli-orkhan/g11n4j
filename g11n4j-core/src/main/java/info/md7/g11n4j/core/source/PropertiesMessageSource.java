@@ -37,19 +37,21 @@ public class PropertiesMessageSource extends AbstractMessageSource {
     @Override
     protected void loadMessages() {
         for (Locale locale : supportedLocales) {
-            String filename = baseDirectory + "/" + fileBaseName + localeSeparator + locale.getLanguage() + "." + fileExtension;
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                if (is != null) {
-                    Properties properties = new Properties();
-                    properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
-                    Map<String, String> flatMap = new HashMap<>();
-                    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                        flatMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+            for (String filename : buildCandidateFilenames(locale)) {
+                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
+                    if (is != null) {
+                        Properties properties = new Properties();
+                        properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
+                        Map<String, String> flatMap = new HashMap<>();
+                        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                            flatMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+                        }
+                        messages.put(locale, flatMap);
+                        break;
                     }
-                    messages.put(locale, flatMap);
+                } catch (IOException e) {
+                    throw new MessageLoadException(filename, e);
                 }
-            } catch (IOException e) {
-                throw new MessageLoadException(filename, e);
             }
         }
     }

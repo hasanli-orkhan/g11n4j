@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en-US" datatype="plaintext" original="messages">
+        <body>
+            <trans-unit id="mail.subject">
+                <source>US verification code for {website}</source>
+                <target>US verification code for {website}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

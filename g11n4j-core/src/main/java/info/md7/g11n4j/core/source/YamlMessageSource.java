@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class YamlMessageSource extends AbstractMessageSource {
 
+    private static final Yaml YAML = new Yaml();
+
     public YamlMessageSource(
             String baseDirectory, String fileBaseName,
             String localeSeparator, String fileExtension,
@@ -37,19 +39,20 @@ public class YamlMessageSource extends AbstractMessageSource {
 
     @Override
     protected void loadMessages() {
-        final Yaml yaml = new Yaml();
         for (Locale locale : supportedLocales) {
-            String filename = baseDirectory + "/" + fileBaseName + localeSeparator + locale.getLanguage() + "." + fileExtension;
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                if (is != null) {
-                    Map<String, Object> yamlMap = yaml.load(is);
-                    if (yamlMap != null) {
-                        Map<String, String> flatMap = flatten("", yamlMap);
-                        messages.put(locale, flatMap);
+            for (String filename : buildCandidateFilenames(locale)) {
+                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
+                    if (is != null) {
+                        Map<String, Object> yamlMap = YAML.load(is);
+                        if (yamlMap != null) {
+                            Map<String, String> flatMap = flatten("", yamlMap);
+                            messages.put(locale, flatMap);
+                        }
+                        break;
                     }
+                } catch (Exception e) {
+                    throw new MessageLoadException(filename, e);
                 }
-            } catch (Exception e) {
-                throw new MessageLoadException(filename, e);
             }
         }
     }

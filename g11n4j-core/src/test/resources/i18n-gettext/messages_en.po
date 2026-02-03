@@ -22,6 +22,12 @@ msgstr "You have {count} new notification"
 msgid "notification.message.count.other"
 msgstr "You have {count} new notifications"
 
+msgid "items.count.one"
+msgstr "Item {0}"
+
+msgid "items.count.other"
+msgstr "Items {0}"
+
 msgid "mail.subject"
 msgstr "Verification code to confirm your account on the website - {website}"
 

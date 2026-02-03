@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class JsonMessageSource extends AbstractMessageSource {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     public JsonMessageSource(
             String baseDirectory, String fileBaseName,
             String localeSeparator, String fileExtension,
@@ -38,19 +40,20 @@ public class JsonMessageSource extends AbstractMessageSource {
 
     @Override
     protected void loadMessages() {
-        ObjectMapper objectMapper = new ObjectMapper();
         for (Locale locale : supportedLocales) {
-            String filename = baseDirectory + "/" + fileBaseName + localeSeparator + locale.getLanguage() + "." + fileExtension;
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                if (is != null) {
-                    Map<String, Object> jsonMap = objectMapper.readValue(is, new TypeReference<Map<String, Object>>() {});
-                    if (jsonMap != null) {
-                        Map<String, String> flatMap = flatten("", jsonMap);
-                        messages.put(locale, flatMap);
+            for (String filename : buildCandidateFilenames(locale)) {
+                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
+                    if (is != null) {
+                        Map<String, Object> jsonMap = OBJECT_MAPPER.readValue(is, new TypeReference<Map<String, Object>>() {});
+                        if (jsonMap != null) {
+                            Map<String, String> flatMap = flatten("", jsonMap);
+                            messages.put(locale, flatMap);
+                        }
+                        break;
                     }
+                } catch (Exception e) {
+                    throw new MessageLoadException(filename, e);
                 }
-            } catch (Exception e) {
-                throw new MessageLoadException(filename, e);
             }
         }
     }

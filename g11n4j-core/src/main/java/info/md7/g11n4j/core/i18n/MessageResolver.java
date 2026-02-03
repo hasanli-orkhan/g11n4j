@@ -43,7 +43,10 @@ public class MessageResolver {
         String template = forms.getOrDefault(category, forms.get("other"));
         if (template == null) return "[[" + keyPrefix + "]]";
 
-        Map<String, Object> merged = new HashMap<>(args);
+        Map<String, Object> merged = new HashMap<>();
+        if (args != null && !args.isEmpty()) {
+            merged.putAll(args);
+        }
         merged.put("count", count);
 
         return new TemplateRenderer(template).render(merged);

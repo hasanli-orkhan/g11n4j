@@ -38,12 +38,9 @@ public class TemplateRenderer {
 
     public String render(Map<String, Object> args) {
         Map<String, Object> merged = new HashMap<>(defaultArgs);
-        merged.putAll(args);
-
-        // Sort placeholders by length in descending order to avoid overlapping issues
-        // e.g., replace {count} before {c} to prevent {c} from partially matching {count}
-        List<String> sortedKeys = new ArrayList<>(merged.keySet());
-        sortedKeys.sort((a, b) -> Integer.compare(b.length(), a.length()));
+        if (args != null && !args.isEmpty()) {
+            merged.putAll(args);
+        }
 
         StringBuffer result = new StringBuffer();
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);

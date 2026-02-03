@@ -11,6 +11,8 @@ import java.util.Map;
 
 public class ResolvablePlural {
 
+    private static final Map<Locale, PluralRules> PLURAL_RULES_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
     private final String keyPrefix;
     private final int count;
     private final Locale locale;
@@ -31,7 +33,7 @@ public class ResolvablePlural {
 
     public ResolvablePlural withContext(String key, String value) {
         MessageContext newContext = new MessageContext();
-        for (Map.Entry<String, String> entry : this.context.getContextMap().entrySet()) {
+        for (Map.Entry<String, String> entry : this.context.getContextMapView().entrySet()) {
             newContext.set(entry.getKey(), entry.getValue());
         }
         newContext.set(key, value);
@@ -39,9 +41,13 @@ public class ResolvablePlural {
     }
 
     public String render(Object... variables) {
-        String template = messageSource.getMessage(keyPrefix, locale, context);
-        TemplateRenderer renderer = new TemplateRenderer(template);
-        return renderer.render(variables);
+        Map<String, Object> indexedArgs = new HashMap<>();
+        if (variables != null) {
+            for (int i = 0; i < variables.length; i++) {
+                indexedArgs.put(String.valueOf(i), variables[i]);
+            }
+        }
+        return render(indexedArgs);
     }
 
     public String render(String key, Object value) {
@@ -50,7 +56,7 @@ public class ResolvablePlural {
 
     public String render(Map<String, Object> args) {
         Map<String, String> forms = messageSource.getPluralForms(keyPrefix, locale, context);
-        PluralRules rules = PluralRules.forLocale(locale);
+        PluralRules rules = PLURAL_RULES_CACHE.computeIfAbsent(locale, PluralRules::forLocale);
         String category = rules.select(count);
         String template = forms.getOrDefault(category, forms.get("other"));
         if (template == null) {

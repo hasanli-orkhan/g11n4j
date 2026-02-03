@@ -14,6 +14,7 @@ public abstract class AbstractMessageSource implements MessageSource {
     private static final int DEFAULT_CACHE_SIZE = 1000;
 
     protected final Map<Locale, Map<String, String>> messages = new ConcurrentHashMap<>();
+    private final Map<Locale, List<Locale>> fallbackChainCache = new ConcurrentHashMap<>();
     protected final MessageCache messageCache;
 
     /**
@@ -92,6 +93,20 @@ public abstract class AbstractMessageSource implements MessageSource {
 
     protected abstract void loadMessages();
 
+    protected List<String> buildCandidateFilenames(Locale locale) {
+        String language = locale.getLanguage();
+        String country = locale.getCountry();
+
+        List<String> candidates = new ArrayList<>(2);
+        if (language != null && !language.isEmpty()) {
+            if (country != null && !country.isEmpty()) {
+                candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + localeSeparator + country + "." + fileExtension);
+            }
+            candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + "." + fileExtension);
+        }
+        return Collections.unmodifiableList(candidates);
+    }
+
     /**
      * Validate that the key is not null or empty.
      */
@@ -115,21 +130,23 @@ public abstract class AbstractMessageSource implements MessageSource {
      * For example: en_US → en → default locale
      */
     private List<Locale> buildFallbackChain(Locale locale) {
-        List<Locale> chain = new ArrayList<>();
-        chain.add(locale);
+        return fallbackChainCache.computeIfAbsent(locale, key -> {
+            List<Locale> chain = new ArrayList<>();
+            chain.add(key);
 
-        if (!locale.getCountry().isEmpty()) {
-            Locale languageOnlyLocale = Locale.forLanguageTag(locale.getLanguage());
-            if (!chain.contains(languageOnlyLocale)) {
-                chain.add(languageOnlyLocale);
+            if (!key.getCountry().isEmpty()) {
+                Locale languageOnlyLocale = Locale.forLanguageTag(key.getLanguage());
+                if (!chain.contains(languageOnlyLocale)) {
+                    chain.add(languageOnlyLocale);
+                }
             }
-        }
 
-        if (!chain.contains(defaultLocale)) {
-            chain.add(defaultLocale);
-        }
+            if (!chain.contains(defaultLocale)) {
+                chain.add(defaultLocale);
+            }
 
-        return chain;
+            return Collections.unmodifiableList(chain);
+        });
     }
 
     @Override
@@ -160,7 +177,7 @@ public abstract class AbstractMessageSource implements MessageSource {
         validateKey(key);
         validateLocale(locale);
 
-        if (context == null || context.getContextMap().isEmpty()) {
+        if (context == null || context.getContextMapView().isEmpty()) {
             return this.getMessage(key, locale);
         }
 
@@ -174,7 +191,7 @@ public abstract class AbstractMessageSource implements MessageSource {
         for (Locale fallbackLocale : buildFallbackChain(locale)) {
             Map<String, String> localeMessages = messages.get(fallbackLocale);
             if (localeMessages != null) {
-                for (Map.Entry<String, String> contextEntry : context.getContextMap().entrySet()) {
+                for (Map.Entry<String, String> contextEntry : context.getContextMapView().entrySet()) {
                     String contextKey = contextEntry.getKey();
                     String contextValue = contextEntry.getValue();
 
@@ -205,8 +222,11 @@ public abstract class AbstractMessageSource implements MessageSource {
     private String buildCacheKey(String key, Locale locale, MessageContext context) {
         StringBuilder sb = new StringBuilder(key);
         sb.append(":").append(locale.toLanguageTag());
-        for (Map.Entry<String, String> entry : context.getContextMap().entrySet()) {
-            sb.append(":").append(entry.getKey()).append("=").append(entry.getValue());
+        Map<String, String> contextMap = context.getContextMapView();
+        List<String> keys = new ArrayList<>(contextMap.keySet());
+        Collections.sort(keys);
+        for (String keyName : keys) {
+            sb.append(":").append(keyName).append("=").append(contextMap.get(keyName));
         }
         return sb.toString();
     }
@@ -222,8 +242,8 @@ public abstract class AbstractMessageSource implements MessageSource {
         validateLocale(locale);
 
         List<String> potentialPrefixes = new ArrayList<>();
-        if (context != null && !context.getContextMap().isEmpty()) {
-            Map.Entry<String, String> entry = context.getContextMap().entrySet().iterator().next();
+        if (context != null && !context.getContextMapView().isEmpty()) {
+            Map.Entry<String, String> entry = context.getContextMapView().entrySet().iterator().next();
             potentialPrefixes.add(keyPrefix + "." + entry.getKey() + "." + entry.getValue());
         }
         potentialPrefixes.add(keyPrefix + "._base");

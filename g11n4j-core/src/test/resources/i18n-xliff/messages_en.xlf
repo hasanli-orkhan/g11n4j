@@ -10,6 +10,14 @@
                 <source>You have {count} new notifications</source>
                 <target>You have {count} new notifications</target>
             </trans-unit>
+            <trans-unit id="items.count.one">
+                <source>Item {0}</source>
+                <target>Item {0}</target>
+            </trans-unit>
+            <trans-unit id="items.count.other">
+                <source>Items {0}</source>
+                <target>Items {0}</target>
+            </trans-unit>
             <trans-unit id="mail.subject">
                 <source>Verification code to confirm your account on the website - {website}</source>
                 <target>Verification code to confirm your account on the website - {website}</target>

@@ -27,7 +27,7 @@ public class ResolvableMessage {
 
     public ResolvableMessage withContext(String key, String value) {
         MessageContext newContext = new MessageContext();
-        for (Map.Entry<String, String> entry : this.context.getContextMap().entrySet()) {
+        for (Map.Entry<String, String> entry : this.context.getContextMapView().entrySet()) {
             newContext.set(entry.getKey(), entry.getValue());
         }
         newContext.set(key, value);
