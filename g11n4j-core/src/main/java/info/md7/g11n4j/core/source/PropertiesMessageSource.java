@@ -22,6 +22,18 @@ public class PropertiesMessageSource extends AbstractMessageSource {
         }
     }
 
+    public PropertiesMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
+        if (!SourceType.PROPERTIES.getExtensions().contains(fileExtension)) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be 'properties'.");
+        }
+    }
+
     @Override
     protected void loadMessages() {
         for (Locale locale : supportedLocales) {

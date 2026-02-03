@@ -19,6 +19,18 @@ public class GettextMessageSource extends AbstractMessageSource {
         }
     }
 
+    public GettextMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
+        if (!SourceType.GETTEXT.getExtensions().contains(fileExtension)) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be one of: " + SourceType.GETTEXT.getExtensions());
+        }
+    }
+
     @Override
     protected void loadMessages() {
         for (Locale locale : supportedLocales) {

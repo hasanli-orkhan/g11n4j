@@ -23,6 +23,18 @@ public class YamlMessageSource extends AbstractMessageSource {
         }
     }
 
+    public YamlMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
+        if (!SourceType.YAML.getExtensions().contains(fileExtension)) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension);
+        }
+    }
+
     @Override
     protected void loadMessages() {
         final Yaml yaml = new Yaml();

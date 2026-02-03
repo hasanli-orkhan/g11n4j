@@ -24,6 +24,18 @@ public class JsonMessageSource extends AbstractMessageSource {
         }
     }
 
+    public JsonMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
+        if (!SourceType.JSON.getExtensions().contains(fileExtension)) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be 'json'.");
+        }
+    }
+
     @Override
     protected void loadMessages() {
         ObjectMapper objectMapper = new ObjectMapper();

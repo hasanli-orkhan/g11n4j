@@ -27,6 +27,18 @@ public class XliffMessageSource extends AbstractMessageSource {
         }
     }
 
+    public XliffMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
+        if (!SourceType.XLIFF.getExtensions().contains(fileExtension)) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be one of: " + SourceType.XLIFF.getExtensions());
+        }
+    }
+
     @Override
     protected void loadMessages() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

@@ -1,0 +1,210 @@
+{
+  "groups": [
+    {
+      "name": "spring.g11n",
+      "type": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Configuration properties for g11n4j internationalization support."
+    },
+    {
+      "name": "spring.g11n.cache",
+      "type": "info.md7.g11n4j.spring.boot.config.G11nProperties$CacheProperties",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "sourceMethod": "getCache()",
+      "description": "Cache configuration for message storage."
+    },
+    {
+      "name": "spring.g11n.validation",
+      "type": "info.md7.g11n4j.spring.boot.config.G11nProperties$ValidationProperties",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "sourceMethod": "getValidation()",
+      "description": "Validation configuration for message source consistency checks."
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.g11n.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Enable or disable g11n4j auto-configuration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.g11n.type",
+      "type": "info.md7.g11n4j.core.model.SourceType",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Type of message source (YAML, PROPERTIES, JSON, GETTEXT, XLIFF).",
+      "defaultValue": "PROPERTIES"
+    },
+    {
+      "name": "spring.g11n.base-directory",
+      "type": "java.lang.String",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Base directory for message files.",
+      "defaultValue": "i18n"
+    },
+    {
+      "name": "spring.g11n.file-base-name",
+      "type": "java.lang.String",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Base name for message files.",
+      "defaultValue": "messages"
+    },
+    {
+      "name": "spring.g11n.locale-separator",
+      "type": "java.lang.String",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Locale separator in filenames.",
+      "defaultValue": "_"
+    },
+    {
+      "name": "spring.g11n.file-extension",
+      "type": "java.lang.String",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "File extension for message files.",
+      "defaultValue": "properties"
+    },
+    {
+      "name": "spring.g11n.default-locale",
+      "type": "java.util.Locale",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "Default locale for fallback.",
+      "defaultValue": "en"
+    },
+    {
+      "name": "spring.g11n.locales",
+      "type": "java.util.List<java.util.Locale>",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties",
+      "description": "List of supported locales."
+    },
+    {
+      "name": "spring.g11n.cache.size",
+      "type": "java.lang.Integer",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties$CacheProperties",
+      "description": "Maximum number of cached messages.",
+      "defaultValue": 1000
+    },
+    {
+      "name": "spring.g11n.cache.enable-statistics",
+      "type": "java.lang.Boolean",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties$CacheProperties",
+      "description": "Enable cache statistics collection.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.g11n.validation.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties$ValidationProperties",
+      "description": "Enable or disable validation on startup.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.g11n.validation.fail-on-error",
+      "type": "java.lang.Boolean",
+      "sourceType": "info.md7.g11n4j.spring.boot.config.G11nProperties$ValidationProperties",
+      "description": "Fail application startup if validation finds errors.",
+      "defaultValue": false
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.g11n.type",
+      "values": [
+        {
+          "value": "YAML",
+          "description": "YAML format (.yml, .yaml)"
+        },
+        {
+          "value": "PROPERTIES",
+          "description": "Java Properties format (.properties)"
+        },
+        {
+          "value": "JSON",
+          "description": "JSON format (.json)"
+        },
+        {
+          "value": "GETTEXT",
+          "description": "GNU gettext format (.po, .pot, .mo)"
+        },
+        {
+          "value": "XLIFF",
+          "description": "XLIFF (XML Localization Interchange File Format) (.xlf, .xliff)"
+        }
+      ]
+    },
+    {
+      "name": "spring.g11n.default-locale",
+      "values": [
+        {
+          "value": "en",
+          "description": "English"
+        },
+        {
+          "value": "ru",
+          "description": "Russian"
+        },
+        {
+          "value": "zh",
+          "description": "Chinese"
+        },
+        {
+          "value": "de",
+          "description": "German"
+        },
+        {
+          "value": "fr",
+          "description": "French"
+        },
+        {
+          "value": "es",
+          "description": "Spanish"
+        },
+        {
+          "value": "ja",
+          "description": "Japanese"
+        },
+        {
+          "value": "ko",
+          "description": "Korean"
+        }
+      ]
+    },
+    {
+      "name": "spring.g11n.locales",
+      "values": [
+        {
+          "value": "en",
+          "description": "English"
+        },
+        {
+          "value": "ru",
+          "description": "Russian"
+        },
+        {
+          "value": "zh",
+          "description": "Chinese"
+        },
+        {
+          "value": "de",
+          "description": "German"
+        },
+        {
+          "value": "fr",
+          "description": "French"
+        },
+        {
+          "value": "es",
+          "description": "Spanish"
+        },
+        {
+          "value": "ja",
+          "description": "Japanese"
+        },
+        {
+          "value": "ko",
+          "description": "Korean"
+        }
+      ]
+    }
+  ]
+}

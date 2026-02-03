@@ -22,7 +22,7 @@
 
         <lombok.version>1.18.38</lombok.version>
         <snakeyaml.version>2.4</snakeyaml.version>
-        <spring-boot.version>3.4.5</spring-boot.version>
+        <spring-boot.version>3.5.10</spring-boot.version>
         <icu4j.version>77.1</icu4j.version>
         <junit.version>5.10.3</junit.version>
         <picocli.version>4.7.7</picocli.version>
@@ -88,6 +88,18 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
 

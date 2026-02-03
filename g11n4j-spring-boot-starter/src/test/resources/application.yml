@@ -7,9 +7,17 @@ spring:
     default-locale: en
     locales:
       - en
-      - de
       - ru
+      - zh
+      - de
+      - fr
+    cache:
+      size: 2000
+      enable-statistics: true
     type: YAML
+    validation:
+      enabled: true
+      fail-on-error: false
 
   config:
     activate:
