@@ -1,6 +1,8 @@
 package info.md7.g11n4j.spring.boot.validation;
 
 import info.md7.g11n4j.core.model.SourceType;
+import info.md7.g11n4j.core.source.MessageSource;
+import info.md7.g11n4j.core.source.PropertiesMessageSource;
 import info.md7.g11n4j.spring.boot.config.G11nProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ class MessageSourceValidatorTests {
     @Test
     void shouldDetectMissingKeys() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.forLanguageTag("ru")));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
@@ -42,7 +44,7 @@ class MessageSourceValidatorTests {
     @Test
     void shouldDetectExtraKeys() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.forLanguageTag("ru")));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
@@ -55,7 +57,7 @@ class MessageSourceValidatorTests {
     @Test
     void shouldValidateSuccessfullyForCompleteLocale() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.GERMAN));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
@@ -65,20 +67,20 @@ class MessageSourceValidatorTests {
     }
 
     @Test
-    void shouldReportErrorForMissingFile() {
+    void shouldReportMissingKeysForMissingFile() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.FRENCH));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
-        assertThat(result.hasErrors()).isTrue();
-        assertThat(result.getErrors()).anyMatch(error -> error.contains("fr"));
+        assertThat(result.hasMissingKeys()).isTrue();
+        assertThat(result.getMissingKeysByLocale()).containsKey(Locale.FRENCH);
     }
 
     @Test
     void shouldSkipDefaultLocaleInValidation() {
         properties.setLocales(List.of(Locale.ENGLISH));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
@@ -89,20 +91,19 @@ class MessageSourceValidatorTests {
     }
 
     @Test
-    void shouldHandleEmptyLocalesList() {
-        properties.setLocales(List.of());
-        validator = new MessageSourceValidator(properties);
+    void shouldHandleSingleLocaleList() {
+        properties.setLocales(List.of(Locale.ENGLISH));
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
-        assertThat(result.hasWarnings()).isTrue();
-        assertThat(result.getWarnings()).anyMatch(w -> w.contains("No supported locales"));
+        assertThat(result.hasWarnings()).isFalse();
     }
 
     @Test
     void shouldCountTotalMissingAndExtraKeys() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.forLanguageTag("ru")));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
 
@@ -113,7 +114,7 @@ class MessageSourceValidatorTests {
     @Test
     void shouldGenerateFormattedSummary() {
         properties.setLocales(List.of(Locale.ENGLISH, Locale.forLanguageTag("ru"), Locale.GERMAN));
-        validator = new MessageSourceValidator(properties);
+        validator = createValidator(properties.getLocales());
 
         ValidationResult result = validator.validate();
         String summary = result.getSummary();
@@ -123,5 +124,17 @@ class MessageSourceValidatorTests {
         assertThat(summary).contains("EXTRA KEYS");
         assertThat(summary).contains("VALID LOCALES");
         assertThat(summary).contains("de"); // German is valid
+    }
+
+    private MessageSourceValidator createValidator(List<Locale> locales) {
+        MessageSource messageSource = new PropertiesMessageSource(
+                properties.getBaseDirectory(),
+                properties.getFileBaseName(),
+                properties.getLocaleSeparator(),
+                properties.getFileExtension(),
+                properties.getDefaultLocale(),
+                locales
+        );
+        return new MessageSourceValidator(properties, messageSource);
     }
 }

@@ -93,8 +93,8 @@ public class G11nAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public MessageSourceValidator messageSourceValidator() {
-        return new MessageSourceValidator(properties);
+    public MessageSourceValidator messageSourceValidator(MessageSource g11n4jMessageSource) {
+        return new MessageSourceValidator(properties, g11n4jMessageSource);
     }
 
     @ConditionalOnProperty(prefix = "spring.g11n.validation", name = "enabled", havingValue = "true", matchIfMissing = true)

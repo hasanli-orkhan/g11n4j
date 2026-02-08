@@ -3,11 +3,12 @@ package info.md7.g11n4j.core.source;
 import info.md7.g11n4j.core.cache.MessageCache;
 import info.md7.g11n4j.core.exception.NoSuchMessageException;
 import info.md7.g11n4j.core.i18n.MessageContext;
+import info.md7.g11n4j.core.validation.MessageSourceKeyProvider;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractMessageSource implements MessageSource {
+public abstract class AbstractMessageSource implements MessageSource, MessageSourceKeyProvider {
 
     private static final String BASE_SUFFIX = "._base";
     private static final String OTHER_SUFFIX = ".other";
@@ -86,12 +87,31 @@ public abstract class AbstractMessageSource implements MessageSource {
         this.localeSeparator = localeSeparator;
         this.fileExtension = fileExtension;
         this.defaultLocale = defaultLocale;
-        this.supportedLocales = supportedLocales;
+        this.supportedLocales = List.copyOf(supportedLocales);
         this.messageCache = new MessageCache(cacheSize);
         loadMessages();
     }
 
     protected abstract void loadMessages();
+
+    @Override
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    @Override
+    public List<Locale> getSupportedLocales() {
+        return Collections.unmodifiableList(supportedLocales);
+    }
+
+    @Override
+    public Map<Locale, Set<String>> getKeysByLocale() {
+        Map<Locale, Set<String>> keysByLocale = new HashMap<>();
+        for (Map.Entry<Locale, Map<String, String>> entry : messages.entrySet()) {
+            keysByLocale.put(entry.getKey(), Set.copyOf(entry.getValue().keySet()));
+        }
+        return Collections.unmodifiableMap(keysByLocale);
+    }
 
     protected List<String> buildCandidateFilenames(Locale locale) {
         String language = locale.getLanguage();
