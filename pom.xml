@@ -12,7 +12,6 @@
     <modules>
         <module>g11n4j-core</module>
         <module>g11n4j-spring-boot-starter</module>
-        <module>g11n4j-cli</module>
     </modules>
 
     <properties>
