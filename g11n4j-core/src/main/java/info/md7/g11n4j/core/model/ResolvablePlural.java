@@ -1,7 +1,7 @@
 package info.md7.g11n4j.core.model;
 
-import com.ibm.icu.text.PluralRules;
 import info.md7.g11n4j.core.i18n.MessageContext;
+import info.md7.g11n4j.core.i18n.PluralRuleProvider;
 import info.md7.g11n4j.core.i18n.TemplateRenderer;
 import info.md7.g11n4j.core.source.MessageSource;
 
@@ -10,8 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ResolvablePlural {
-
-    private static final Map<Locale, PluralRules> PLURAL_RULES_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final String keyPrefix;
     private final int count;
@@ -56,13 +54,15 @@ public class ResolvablePlural {
 
     public String render(Map<String, Object> args) {
         Map<String, String> forms = messageSource.getPluralForms(keyPrefix, locale, context);
-        PluralRules rules = PLURAL_RULES_CACHE.computeIfAbsent(locale, PluralRules::forLocale);
-        String category = rules.select(count);
+        String category = PluralRuleProvider.selectCategory(locale, count);
         String template = forms.getOrDefault(category, forms.get("other"));
         if (template == null) {
             return "[[" + keyPrefix + "]]"; // Fallback if no forms are found
         }
-        Map<String, Object> mergedArgs = new HashMap<>(args);
+        Map<String, Object> mergedArgs = new HashMap<>();
+        if (args != null && !args.isEmpty()) {
+            mergedArgs.putAll(args);
+        }
         mergedArgs.put("count", count);
         TemplateRenderer renderer = new TemplateRenderer(template);
 

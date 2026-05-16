@@ -1,10 +1,13 @@
 package info.md7.g11n4j.core.source;
 
 import info.md7.g11n4j.core.cache.MessageCache;
+import info.md7.g11n4j.core.exception.MessageLoadException;
 import info.md7.g11n4j.core.exception.NoSuchMessageException;
 import info.md7.g11n4j.core.i18n.MessageContext;
+import info.md7.g11n4j.core.model.SourceType;
 import info.md7.g11n4j.core.validation.MessageSourceKeyProvider;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,9 +18,10 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
     private static final int DEFAULT_CACHE_SIZE = 1000;
     private static final String CLASSPATH_PREFIX = "classpath:";
 
-    protected final Map<Locale, Map<String, String>> messages = new ConcurrentHashMap<>();
     private final Map<Locale, List<Locale>> fallbackChainCache = new ConcurrentHashMap<>();
     protected final MessageCache messageCache;
+    private volatile Map<Locale, Map<String, String>> messagesByLocale = Map.of();
+    private volatile Map<Locale, Map<String, Map<String, String>>> pluralFormsIndexByLocale = Map.of();
 
     /**
      * Base directory for message files (e.g., "i18n").
@@ -90,7 +94,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         this.defaultLocale = defaultLocale;
         this.supportedLocales = List.copyOf(supportedLocales);
         this.messageCache = new MessageCache(cacheSize);
-        loadMessages();
+        reloadAllMessages();
     }
 
     private String normalizeBaseDirectory(String configuredBaseDirectory) {
@@ -112,7 +116,44 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         return normalized;
     }
 
-    protected abstract void loadMessages();
+    protected abstract Map<String, String> parseMessageFile(InputStream is) throws Exception;
+
+    protected final void validateSupportedExtension(SourceType sourceType, String extension) {
+        if (sourceType == null) {
+            throw new IllegalArgumentException("sourceType cannot be null");
+        }
+        if (extension == null || extension.trim().isEmpty()) {
+            throw new IllegalArgumentException("fileExtension cannot be null or empty");
+        }
+        if (!sourceType.getExtensions().contains(extension)) {
+            throw new IllegalArgumentException(
+                    "Unsupported file extension: " + extension + ". Must be one of: " + sourceType.getExtensions()
+            );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final Map<String, String> flattenNestedMap(Map<String, Object> source) {
+        if (source == null || source.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> result = new LinkedHashMap<>();
+        flattenInto("", source, result);
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void flattenInto(String prefix, Map<String, Object> source, Map<String, String> target) {
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            String key = prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map<?, ?> nestedMap) {
+                flattenInto(key, (Map<String, Object>) nestedMap, target);
+            } else if (value != null) {
+                target.put(key, value.toString());
+            }
+        }
+    }
 
     @Override
     public Locale getDefaultLocale() {
@@ -126,8 +167,8 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
 
     @Override
     public Map<Locale, Set<String>> getKeysByLocale() {
-        Map<Locale, Set<String>> keysByLocale = new HashMap<>();
-        for (Map.Entry<Locale, Map<String, String>> entry : messages.entrySet()) {
+        Map<Locale, Set<String>> keysByLocale = new LinkedHashMap<>();
+        for (Map.Entry<Locale, Map<String, String>> entry : messagesByLocale.entrySet()) {
             keysByLocale.put(entry.getKey(), Set.copyOf(entry.getValue().keySet()));
         }
         return Collections.unmodifiableMap(keysByLocale);
@@ -194,8 +235,9 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         validateKey(key);
         validateLocale(locale);
 
+        Map<Locale, Map<String, String>> currentMessages = messagesByLocale;
         for (Locale fallbackLocale : buildFallbackChain(locale)) {
-            Map<String, String> localeMessages = messages.get(fallbackLocale);
+            Map<String, String> localeMessages = currentMessages.get(fallbackLocale);
             if (localeMessages != null) {
                 String message = localeMessages.get(key);
                 if (message != null) {
@@ -218,7 +260,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         validateLocale(locale);
 
         if (context == null || context.getContextMapView().isEmpty()) {
-            return this.getMessage(key, locale);
+            return getMessage(key, locale);
         }
 
         String cacheKey = buildCacheKey(key, locale, context);
@@ -228,8 +270,9 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         }
 
         StringBuilder keyBuilder = new StringBuilder(key.length() + 20);
+        Map<Locale, Map<String, String>> currentMessages = messagesByLocale;
         for (Locale fallbackLocale : buildFallbackChain(locale)) {
-            Map<String, String> localeMessages = messages.get(fallbackLocale);
+            Map<String, String> localeMessages = currentMessages.get(fallbackLocale);
             if (localeMessages != null) {
                 for (Map.Entry<String, String> contextEntry : context.getContextMapView().entrySet()) {
                     String contextKey = contextEntry.getKey();
@@ -254,7 +297,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
             }
         }
 
-        String fallbackMessage = this.getMessage(key, locale);
+        String fallbackMessage = getMessage(key, locale);
         messageCache.put(cacheKey, fallbackMessage);
         return fallbackMessage;
     }
@@ -281,7 +324,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         validateKey(keyPrefix);
         validateLocale(locale);
 
-        List<String> potentialPrefixes = new ArrayList<>();
+        List<String> potentialPrefixes = new ArrayList<>(3);
         if (context != null && !context.getContextMapView().isEmpty()) {
             Map.Entry<String, String> entry = context.getContextMapView().entrySet().iterator().next();
             potentialPrefixes.add(keyPrefix + "." + entry.getKey() + "." + entry.getValue());
@@ -289,50 +332,126 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         potentialPrefixes.add(keyPrefix + "._base");
         potentialPrefixes.add(keyPrefix);
 
+        Map<Locale, Map<String, Map<String, String>>> currentPluralIndex = pluralFormsIndexByLocale;
         for (Locale fallbackLocale : buildFallbackChain(locale)) {
-            Map<String, String> localeMessages = messages.get(fallbackLocale);
-            if (localeMessages != null) {
-                for (String prefix : potentialPrefixes) {
-                    Map<String, String> forms = getPluralFormsForPrefix(localeMessages, prefix);
-                    if (!forms.isEmpty()) {
-                        return forms;
-                    }
+            Map<String, Map<String, String>> localePluralForms = currentPluralIndex.get(fallbackLocale);
+            if (localePluralForms == null || localePluralForms.isEmpty()) {
+                continue;
+            }
+            for (String prefix : potentialPrefixes) {
+                Map<String, String> forms = localePluralForms.get(prefix);
+                if (forms != null && !forms.isEmpty()) {
+                    return forms;
                 }
             }
         }
         return Collections.emptyMap();
     }
 
-    private Map<String, String> getPluralFormsForPrefix(Map<String, String> allMessages, String prefix) {
-        Map<String, String> forms = new HashMap<>();
-        String searchPrefix = prefix + ".";
-        int prefixLength = searchPrefix.length();
-
-        for (Map.Entry<String, String> entry : allMessages.entrySet()) {
-            String key = entry.getKey();
-            if (key.startsWith(searchPrefix)) {
-                String pluralCategory = key.substring(prefixLength);
-                // Check if this is a direct plural form (no nested dots)
-                if (pluralCategory.indexOf('.') == -1) {
-                    forms.put(pluralCategory, entry.getValue());
-                }
-            }
-        }
-        return forms;
-    }
-
     @Override
     public void reload() {
-        messages.clear();
+        reloadAllMessages();
         messageCache.clear();
-        loadMessages();
+        fallbackChainCache.clear();
     }
 
     @Override
     public void reload(Locale locale) {
-        messages.remove(locale);
+        validateLocale(locale);
+        reloadSingleLocale(locale);
         messageCache.clear();
-        loadMessages();
+        fallbackChainCache.clear();
+    }
+
+    private void reloadAllMessages() {
+        Map<Locale, Map<String, String>> reloadedMessages = new LinkedHashMap<>();
+        Map<Locale, Map<String, Map<String, String>>> reloadedPluralIndex = new LinkedHashMap<>();
+
+        for (Locale locale : supportedLocales) {
+            Optional<Map<String, String>> loadedMessages = tryLoadLocaleMessages(locale);
+            if (loadedMessages.isPresent()) {
+                Map<String, String> localeMessages = loadedMessages.get();
+                reloadedMessages.put(locale, localeMessages);
+                reloadedPluralIndex.put(locale, buildPluralFormsIndex(localeMessages));
+            }
+        }
+
+        messagesByLocale = Map.copyOf(reloadedMessages);
+        pluralFormsIndexByLocale = Map.copyOf(reloadedPluralIndex);
+    }
+
+    private void reloadSingleLocale(Locale locale) {
+        Map<Locale, Map<String, String>> updatedMessages = new LinkedHashMap<>(messagesByLocale);
+        Map<Locale, Map<String, Map<String, String>>> updatedPluralIndex = new LinkedHashMap<>(pluralFormsIndexByLocale);
+
+        Optional<Map<String, String>> loadedMessages = tryLoadLocaleMessages(locale);
+        if (loadedMessages.isPresent()) {
+            Map<String, String> localeMessages = loadedMessages.get();
+            updatedMessages.put(locale, localeMessages);
+            updatedPluralIndex.put(locale, buildPluralFormsIndex(localeMessages));
+        } else {
+            updatedMessages.remove(locale);
+            updatedPluralIndex.remove(locale);
+        }
+
+        messagesByLocale = Map.copyOf(updatedMessages);
+        pluralFormsIndexByLocale = Map.copyOf(updatedPluralIndex);
+    }
+
+    private Optional<Map<String, String>> tryLoadLocaleMessages(Locale locale) {
+        for (String filename : buildCandidateFilenames(locale)) {
+            try (InputStream is = openResource(filename)) {
+                if (is == null) {
+                    continue;
+                }
+                Map<String, String> parsed = parseMessageFile(is);
+                return Optional.of(toImmutableMap(parsed));
+            } catch (Exception e) {
+                throw new MessageLoadException(filename, e);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private InputStream openResource(String filename) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader == null) {
+            classLoader = getClass().getClassLoader();
+        }
+        return classLoader.getResourceAsStream(filename);
+    }
+
+    private Map<String, Map<String, String>> buildPluralFormsIndex(Map<String, String> localeMessages) {
+        if (localeMessages == null || localeMessages.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<String, Map<String, String>> index = new LinkedHashMap<>();
+        for (Map.Entry<String, String> entry : localeMessages.entrySet()) {
+            String fullKey = entry.getKey();
+            int lastDot = fullKey.lastIndexOf('.');
+            if (lastDot <= 0 || lastDot == fullKey.length() - 1) {
+                continue;
+            }
+
+            String prefix = fullKey.substring(0, lastDot);
+            String category = fullKey.substring(lastDot + 1);
+            index.computeIfAbsent(prefix, ignored -> new LinkedHashMap<>())
+                    .put(category, entry.getValue());
+        }
+
+        Map<String, Map<String, String>> immutableIndex = new LinkedHashMap<>();
+        for (Map.Entry<String, Map<String, String>> entry : index.entrySet()) {
+            immutableIndex.put(entry.getKey(), toImmutableMap(entry.getValue()));
+        }
+        return Map.copyOf(immutableIndex);
+    }
+
+    private Map<String, String> toImmutableMap(Map<String, String> source) {
+        if (source == null || source.isEmpty()) {
+            return Map.of();
+        }
+        return Map.copyOf(new LinkedHashMap<>(source));
     }
 
 }

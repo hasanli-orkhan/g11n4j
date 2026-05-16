@@ -29,10 +29,6 @@
             <artifactId>icu4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.gettext-commons</groupId>
-            <artifactId>gettext-commons</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>

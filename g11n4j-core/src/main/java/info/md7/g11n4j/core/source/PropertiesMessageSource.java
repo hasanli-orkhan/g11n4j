@@ -1,13 +1,16 @@
 package info.md7.g11n4j.core.source;
 
-import info.md7.g11n4j.core.exception.MessageLoadException;
 import info.md7.g11n4j.core.model.SourceType;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 public class PropertiesMessageSource extends AbstractMessageSource {
 
@@ -17,9 +20,7 @@ public class PropertiesMessageSource extends AbstractMessageSource {
             Locale defaultLocale, List<Locale> supportedLocales
     ) {
         super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales);
-        if (!SourceType.PROPERTIES.getExtensions().contains(fileExtension)) {
-            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be 'properties'.");
-        }
+        validateSupportedExtension(SourceType.PROPERTIES, fileExtension);
     }
 
     public PropertiesMessageSource(
@@ -29,31 +30,18 @@ public class PropertiesMessageSource extends AbstractMessageSource {
             int cacheSize
     ) {
         super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
-        if (!SourceType.PROPERTIES.getExtensions().contains(fileExtension)) {
-            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be 'properties'.");
-        }
+        validateSupportedExtension(SourceType.PROPERTIES, fileExtension);
     }
 
     @Override
-    protected void loadMessages() {
-        for (Locale locale : supportedLocales) {
-            for (String filename : buildCandidateFilenames(locale)) {
-                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                    if (is != null) {
-                        Properties properties = new Properties();
-                        properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
-                        Map<String, String> flatMap = new HashMap<>();
-                        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                            flatMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
-                        }
-                        messages.put(locale, flatMap);
-                        break;
-                    }
-                } catch (IOException e) {
-                    throw new MessageLoadException(filename, e);
-                }
-            }
+    protected Map<String, String> parseMessageFile(InputStream is) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
+        Map<String, String> flatMap = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            flatMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
+        return flatMap;
     }
 
 }

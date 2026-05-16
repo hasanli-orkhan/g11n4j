@@ -1,11 +1,11 @@
 package info.md7.g11n4j.core.source;
 
-import info.md7.g11n4j.core.exception.MessageLoadException;
 import info.md7.g11n4j.core.model.SourceType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
@@ -22,9 +22,7 @@ public class XliffMessageSource extends AbstractMessageSource {
             Locale defaultLocale, List<Locale> supportedLocales
     ) {
         super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales);
-        if (!SourceType.XLIFF.getExtensions().contains(fileExtension)) {
-            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be one of: " + SourceType.XLIFF.getExtensions());
-        }
+        validateSupportedExtension(SourceType.XLIFF, fileExtension);
     }
 
     public XliffMessageSource(
@@ -34,56 +32,55 @@ public class XliffMessageSource extends AbstractMessageSource {
             int cacheSize
     ) {
         super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, cacheSize);
-        if (!SourceType.XLIFF.getExtensions().contains(fileExtension)) {
-            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension + ". Must be one of: " + SourceType.XLIFF.getExtensions());
-        }
+        validateSupportedExtension(SourceType.XLIFF, fileExtension);
     }
 
     @Override
-    protected void loadMessages() {
+    protected Map<String, String> parseMessageFile(InputStream is) throws Exception {
+        DocumentBuilderFactory factory = createSecureDocumentBuilderFactory();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(is);
+        return parseXliffDocument(doc);
+    }
+
+    private DocumentBuilderFactory createSecureDocumentBuilderFactory() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-
-        for (Locale locale : supportedLocales) {
-            for (String filename : buildCandidateFilenames(locale)) {
-                try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename)) {
-                    if (is != null) {
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document doc = builder.parse(is);
-                        Map<String, String> flatMap = parseXliffDocument(doc);
-                        messages.put(locale, flatMap);
-                        break;
-                    }
-                } catch (Exception e) {
-                    throw new MessageLoadException(filename, e);
-                }
-            }
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        try {
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        } catch (IllegalArgumentException ignored) {
+            // Not supported by some parsers/JDK combinations.
         }
+        return factory;
     }
 
     private Map<String, String> parseXliffDocument(Document doc) {
         Map<String, String> result = new LinkedHashMap<>();
 
-        // XLIFF can have multiple file elements
         NodeList fileNodes = doc.getElementsByTagName("file");
         for (int i = 0; i < fileNodes.getLength(); i++) {
             Element fileElement = (Element) fileNodes.item(i);
 
-            // Get all trans-unit elements
             NodeList transUnits = fileElement.getElementsByTagName("trans-unit");
             for (int j = 0; j < transUnits.getLength(); j++) {
                 Element transUnit = (Element) transUnits.item(j);
                 String id = transUnit.getAttribute("id");
 
                 if (id != null && !id.isEmpty()) {
-                    // Get target element (translated text), fallback to source if target doesn't exist
                     NodeList targetNodes = transUnit.getElementsByTagName("target");
                     String translation = null;
 
                     if (targetNodes.getLength() > 0) {
                         translation = targetNodes.item(0).getTextContent();
                     } else {
-                        // Fallback to source if target is not present
                         NodeList sourceNodes = transUnit.getElementsByTagName("source");
                         if (sourceNodes.getLength() > 0) {
                             translation = sourceNodes.item(0).getTextContent();

@@ -6,7 +6,7 @@ public enum SourceType {
 
     YAML(List.of("yml", "yaml")),
     PROPERTIES(List.of("properties")),
-    GETTEXT(List.of("pot", "po", "mo")),
+    GETTEXT(List.of("po")),
     JSON(List.of("json")),
     XLIFF(List.of("xlf", "xliff"));
 
