@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="g11n4j documentation for Java and Spring Boot internationalization." />
-  <title>g11n4j Documentation</title>
+  <meta name="description" content="g11n4j - Globalization for Java. Documentation for Java and Spring Boot internationalization." />
+  <title>g11n4j - Globalization for Java</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -31,14 +31,12 @@
       <a href="#actuator">Actuator</a>
       <a href="#locale-resolution">Locale Resolution</a>
       <a href="#properties-encoding">Properties UTF-8</a>
-      <a href="#github-pages">GitHub Pages</a>
-      <a href="#build-test">Build & Test</a>
     </nav>
   </aside>
 
   <main class="content">
     <section id="overview">
-      <h1>g11n4j Documentation</h1>
+      <h1>g11n4j - Globalization for Java</h1>
       <p>g11n4j is a lightweight internationalization library for Java and Spring Boot.</p>
       <ul>
         <li>Locale fallback chain: <code>en_US -&gt; en -&gt; default</code></li>
@@ -239,39 +237,6 @@ public class UserMessageService {
       <img src="./properties-encoding.png" alt="IntelliJ properties file encoding settings" />
     </section>
 
-    <section id="github-pages">
-      <h2>GitHub Pages Deployment</h2>
-      <p>This documentation site is deployed from the <code>docs/</code> folder using GitHub Actions.</p>
-      <ul>
-        <li>Workflow file: <code>.github/workflows/pages.yml</code></li>
-        <li>Trigger: pushes to <code>main</code> and manual dispatch</li>
-        <li>Artifact source path: <code>docs</code></li>
-        <li>Deployment action: <code>actions/deploy-pages@v4</code></li>
-      </ul>
-
-      <pre><code class="language-yaml">name: Deploy GitHub Pages
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - uses: actions/deploy-pages@v4</code></pre>
-
-      <p>Repository setting required: Pages source should be set to <code>GitHub Actions</code>.</p>
-    </section>
-
-    <section id="build-test">
-      <h2>Build and Test</h2>
-      <pre><code class="language-bash">mvn clean test</code></pre>
-    </section>
   </main>
 </div>
 
