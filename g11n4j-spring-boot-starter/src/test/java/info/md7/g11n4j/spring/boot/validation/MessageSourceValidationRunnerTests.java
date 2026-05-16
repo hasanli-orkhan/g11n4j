@@ -39,8 +39,9 @@ class MessageSourceValidationRunnerTests {
 
     @Test
     void shouldRunValidationSuccessfully() {
-        ValidationResult validResult = new ValidationResult();
-        validResult.addSuccess(Locale.GERMAN);
+        ValidationResult validResult = ValidationResult.builder()
+                .addSuccess(Locale.GERMAN)
+                .build();
 
         when(validator.validate()).thenReturn(validResult);
 
@@ -52,9 +53,10 @@ class MessageSourceValidationRunnerTests {
 
     @Test
     void shouldNotFailWhenValidationHasWarnings() {
-        ValidationResult resultWithWarnings = new ValidationResult();
-        resultWithWarnings.addWarning("Some warning");
-        resultWithWarnings.addSuccess(Locale.GERMAN);
+        ValidationResult resultWithWarnings = ValidationResult.builder()
+                .addWarning("Some warning")
+                .addSuccess(Locale.GERMAN)
+                .build();
 
         when(validator.validate()).thenReturn(resultWithWarnings);
 
@@ -66,8 +68,9 @@ class MessageSourceValidationRunnerTests {
 
     @Test
     void shouldNotFailWhenValidationHasExtraKeys() {
-        ValidationResult resultWithExtraKeys = new ValidationResult();
-        resultWithExtraKeys.addExtraKeys(Locale.GERMAN, Set.of("extra.key"));
+        ValidationResult resultWithExtraKeys = ValidationResult.builder()
+                .addExtraKeys(Locale.GERMAN, Set.of("extra.key"))
+                .build();
 
         when(validator.validate()).thenReturn(resultWithExtraKeys);
 
@@ -81,8 +84,9 @@ class MessageSourceValidationRunnerTests {
     void shouldNotFailByDefaultWhenValidationHasMissingKeys() {
         properties.getValidation().setFailOnError(false);
 
-        ValidationResult resultWithMissingKeys = new ValidationResult();
-        resultWithMissingKeys.addMissingKeys(Locale.GERMAN, Set.of("missing.key"));
+        ValidationResult resultWithMissingKeys = ValidationResult.builder()
+                .addMissingKeys(Locale.GERMAN, Set.of("missing.key"))
+                .build();
 
         when(validator.validate()).thenReturn(resultWithMissingKeys);
 
@@ -96,8 +100,9 @@ class MessageSourceValidationRunnerTests {
     void shouldFailWhenFailOnErrorEnabledAndValidationFails() {
         properties.getValidation().setFailOnError(true);
 
-        ValidationResult failedResult = new ValidationResult();
-        failedResult.addMissingKeys(Locale.GERMAN, Set.of("missing.key"));
+        ValidationResult failedResult = ValidationResult.builder()
+                .addMissingKeys(Locale.GERMAN, Set.of("missing.key"))
+                .build();
 
         when(validator.validate()).thenReturn(failedResult);
 
@@ -113,8 +118,9 @@ class MessageSourceValidationRunnerTests {
     void shouldFailWhenFailOnErrorEnabledAndHasErrors() {
         properties.getValidation().setFailOnError(true);
 
-        ValidationResult resultWithErrors = new ValidationResult();
-        resultWithErrors.addError("File not found");
+        ValidationResult resultWithErrors = ValidationResult.builder()
+                .addError("File not found")
+                .build();
 
         when(validator.validate()).thenReturn(resultWithErrors);
 
@@ -129,9 +135,10 @@ class MessageSourceValidationRunnerTests {
     void shouldNotFailWhenFailOnErrorDisabled() {
         properties.getValidation().setFailOnError(false);
 
-        ValidationResult failedResult = new ValidationResult();
-        failedResult.addError("Test error");
-        failedResult.addMissingKeys(Locale.GERMAN, Set.of("missing.key"));
+        ValidationResult failedResult = ValidationResult.builder()
+                .addError("Test error")
+                .addMissingKeys(Locale.GERMAN, Set.of("missing.key"))
+                .build();
 
         when(validator.validate()).thenReturn(failedResult);
 

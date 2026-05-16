@@ -6,8 +6,10 @@ import info.md7.g11n4j.core.source.MessageSource;
 import info.md7.g11n4j.spring.boot.validation.MessageSourceValidationRunner;
 import info.md7.g11n4j.spring.boot.validation.MessageSourceValidator;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.core.NestedExceptionUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -155,5 +157,22 @@ class G11nAutoConfigurationTests {
                         assertThat(properties.getType()).isEqualTo(type);
                     });
         }
+    }
+
+    @Test
+    void shouldFailFastForInvalidCacheConfiguration() {
+        contextRunner
+                .withPropertyValues(
+                        "spring.g11n.enabled=true",
+                        "spring.g11n.cache.size=0"
+                )
+                .run(context -> {
+                    assertThat(context).hasFailed();
+                    assertThat(context.getStartupFailure())
+                            .hasRootCauseInstanceOf(BindValidationException.class);
+                    assertThat(NestedExceptionUtils.getMostSpecificCause(context.getStartupFailure()).getMessage())
+                            .contains("cache.size")
+                            .contains("must be greater than 0");
+                });
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.servlet.LocaleResolver;
  *   <li>Custom LocaleResolver that integrates with g11n4j configuration</li>
  * </ul>
  */
-@AutoConfiguration
+@AutoConfiguration(after = G11nAutoConfiguration.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass(name = "org.springframework.web.servlet.LocaleResolver")
 @ConditionalOnProperty(prefix = "spring.g11n", name = "enabled", havingValue = "true", matchIfMissing = true)

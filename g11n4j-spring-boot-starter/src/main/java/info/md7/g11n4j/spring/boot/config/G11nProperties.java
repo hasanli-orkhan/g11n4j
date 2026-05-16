@@ -1,7 +1,12 @@
 package info.md7.g11n4j.spring.boot.config;
 
 import info.md7.g11n4j.core.model.SourceType;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +30,7 @@ import java.util.Locale;
  *       size: 2000
  * </pre>
  */
+@Validated
 @ConfigurationProperties(prefix = "spring.g11n")
 public class G11nProperties {
 
@@ -36,31 +42,37 @@ public class G11nProperties {
     /**
      * Type of message source (YAML, PROPERTIES, JSON, GETTEXT, XLIFF).
      */
+    @NotNull
     private SourceType type = SourceType.PROPERTIES;
 
     /**
      * Base directory for message files. Default: i18n
      */
+    @NotBlank
     private String baseDirectory = "i18n";
 
     /**
      * Base name for message files. Default: messages
      */
+    @NotBlank
     private String fileBaseName = "messages";
 
     /**
      * Locale separator in filenames. Default: _
      */
+    @NotBlank
     private String localeSeparator = "_";
 
     /**
      * File extension for message files. Default: properties
      */
+    @NotBlank
     private String fileExtension = "properties";
 
     /**
      * Default locale for fallback. Default: en
      */
+    @NotNull
     private Locale defaultLocale = Locale.ENGLISH;
 
     /**
@@ -71,11 +83,15 @@ public class G11nProperties {
     /**
      * Cache configuration properties.
      */
+    @Valid
+    @NotNull
     private CacheProperties cache = new CacheProperties();
 
     /**
      * Validation configuration properties.
      */
+    @Valid
+    @NotNull
     private ValidationProperties validation = new ValidationProperties();
 
     /**
@@ -86,6 +102,7 @@ public class G11nProperties {
         /**
          * Maximum number of cached messages. Default: 1000
          */
+        @Positive
         private int size = 1000;
 
         /**
@@ -126,10 +143,6 @@ public class G11nProperties {
 
     public void setType(SourceType type) {
         this.type = type;
-        // Auto-set file extension based on type if not explicitly configured
-        if (this.fileExtension.equals("properties") && type != SourceType.PROPERTIES) {
-            this.fileExtension = type.getExtensions().get(0);
-        }
     }
 
     public String getBaseDirectory() {

@@ -1,2 +1,3 @@
 info.md7.g11n4j.spring.boot.config.G11nAutoConfiguration
+info.md7.g11n4j.spring.boot.config.G11nActuatorAutoConfiguration
 info.md7.g11n4j.spring.boot.config.G11nWebAutoConfiguration

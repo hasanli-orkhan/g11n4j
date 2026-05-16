@@ -2,14 +2,10 @@ package info.md7.g11n4j.spring.boot.endpoint;
 
 import info.md7.g11n4j.core.source.MessageSource;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Actuator endpoint for reloading message sources.
@@ -20,9 +16,7 @@ import java.util.Map;
  *   <li>POST /actuator/g11n-reload/{locale} - Reload messages for specific locale</li>
  * </ul>
  */
-@Component
 @Endpoint(id = "g11n-reload")
-@ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 public class MessageSourceReloadEndpoint {
 
     private final MessageSource messageSource;
@@ -37,20 +31,12 @@ public class MessageSourceReloadEndpoint {
      * @return Status map indicating success
      */
     @WriteOperation
-    public Map<String, Object> reloadAll() {
+    public ReloadResponse reloadAll() {
         try {
             messageSource.reload();
-            Map<String, Object> result = new HashMap<>();
-            result.put("status", "success");
-            result.put("message", "All message sources reloaded successfully");
-            result.put("timestamp", System.currentTimeMillis());
-            return result;
+            return ReloadResponse.success("All message sources reloaded successfully", null);
         } catch (Exception e) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("status", "error");
-            result.put("message", "Failed to reload message sources: " + e.getMessage());
-            result.put("timestamp", System.currentTimeMillis());
-            return result;
+            return ReloadResponse.error("Failed to reload message sources: " + e.getMessage(), null);
         }
     }
 
@@ -61,23 +47,32 @@ public class MessageSourceReloadEndpoint {
      * @return Status map indicating success
      */
     @WriteOperation
-    public Map<String, Object> reloadLocale(@Selector String localeStr) {
+    public ReloadResponse reloadLocale(@Selector String localeStr) {
         try {
+            if (localeStr == null || localeStr.isBlank()) {
+                throw new IllegalArgumentException("Locale must not be blank");
+            }
             Locale locale = Locale.forLanguageTag(localeStr.replace('_', '-'));
+            if (locale.getLanguage().isBlank()) {
+                throw new IllegalArgumentException("Invalid locale: " + localeStr);
+            }
             messageSource.reload(locale);
-            Map<String, Object> result = new HashMap<>();
-            result.put("status", "success");
-            result.put("message", "Messages reloaded successfully for locale: " + localeStr);
-            result.put("locale", localeStr);
-            result.put("timestamp", System.currentTimeMillis());
-            return result;
+            return ReloadResponse.success("Messages reloaded successfully for locale: " + localeStr, localeStr);
         } catch (Exception e) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("status", "error");
-            result.put("message", "Failed to reload messages for locale " + localeStr + ": " + e.getMessage());
-            result.put("locale", localeStr);
-            result.put("timestamp", System.currentTimeMillis());
-            return result;
+            return ReloadResponse.error(
+                    "Failed to reload messages for locale " + localeStr + ": " + e.getMessage(),
+                    localeStr
+            );
+        }
+    }
+
+    public record ReloadResponse(String status, String message, String locale, long timestamp) {
+        static ReloadResponse success(String message, String locale) {
+            return new ReloadResponse("success", message, locale, System.currentTimeMillis());
+        }
+
+        static ReloadResponse error(String message, String locale) {
+            return new ReloadResponse("error", message, locale, System.currentTimeMillis());
         }
     }
 }

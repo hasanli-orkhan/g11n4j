@@ -1,0 +1,78 @@
+{
+  "hints": [
+    {
+      "name": "spring.g11n.default-locale",
+      "values": [
+        {
+          "value": "en",
+          "description": "English"
+        },
+        {
+          "value": "ru",
+          "description": "Russian"
+        },
+        {
+          "value": "zh",
+          "description": "Chinese"
+        },
+        {
+          "value": "de",
+          "description": "German"
+        },
+        {
+          "value": "fr",
+          "description": "French"
+        },
+        {
+          "value": "es",
+          "description": "Spanish"
+        },
+        {
+          "value": "ja",
+          "description": "Japanese"
+        },
+        {
+          "value": "ko",
+          "description": "Korean"
+        }
+      ]
+    },
+    {
+      "name": "spring.g11n.locales",
+      "values": [
+        {
+          "value": "en",
+          "description": "English"
+        },
+        {
+          "value": "ru",
+          "description": "Russian"
+        },
+        {
+          "value": "zh",
+          "description": "Chinese"
+        },
+        {
+          "value": "de",
+          "description": "German"
+        },
+        {
+          "value": "fr",
+          "description": "French"
+        },
+        {
+          "value": "es",
+          "description": "Spanish"
+        },
+        {
+          "value": "ja",
+          "description": "Japanese"
+        },
+        {
+          "value": "ko",
+          "description": "Korean"
+        }
+      ]
+    }
+  ]
+}

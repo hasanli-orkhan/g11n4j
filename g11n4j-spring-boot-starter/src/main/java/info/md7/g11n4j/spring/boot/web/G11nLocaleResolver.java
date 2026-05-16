@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.LocaleResolver;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,27 +34,22 @@ public class G11nLocaleResolver implements LocaleResolver {
         // 1. Check query parameter
         String localeParam = request.getParameter(LOCALE_PARAM);
         if (localeParam != null && !localeParam.isEmpty()) {
-            Locale locale = parseLocale(localeParam);
-            if (isSupportedLocale(locale)) {
-                return locale;
+            Locale resolved = findBestSupportedLocale(parseLocale(localeParam));
+            if (resolved != null) {
+                return resolved;
             }
         }
 
         // 2. Check Accept-Language header
         Locale headerLocale = request.getLocale();
-        if (headerLocale != null && isSupportedLocale(headerLocale)) {
-            return headerLocale;
-        }
-
-        // 3. Check if language-only variant is supported
         if (headerLocale != null) {
-            Locale languageOnlyLocale = Locale.forLanguageTag(headerLocale.getLanguage());
-            if (isSupportedLocale(languageOnlyLocale)) {
-                return languageOnlyLocale;
+            Locale resolved = findBestSupportedLocale(headerLocale);
+            if (resolved != null) {
+                return resolved;
             }
         }
 
-        // 4. Fallback to default locale
+        // 3. Fallback to default locale
         return properties.getDefaultLocale();
     }
 
@@ -81,12 +77,26 @@ public class G11nLocaleResolver implements LocaleResolver {
      * @param locale Locale to check
      * @return true if supported, false otherwise
      */
-    private boolean isSupportedLocale(Locale locale) {
+    private Locale findBestSupportedLocale(Locale locale) {
+        if (locale == null) {
+            return null;
+        }
         List<Locale> supportedLocales = properties.getLocales();
         if (supportedLocales == null || supportedLocales.isEmpty()) {
-            return true;
+            return locale;
         }
+
+        Locale exactMatch = supportedLocales.stream()
+                .filter(supported -> supported.toLanguageTag().equalsIgnoreCase(locale.toLanguageTag()))
+                .findFirst()
+                .orElse(null);
+        if (exactMatch != null) {
+            return exactMatch;
+        }
+
         return supportedLocales.stream()
-                .anyMatch(supported -> supported.getLanguage().equals(locale.getLanguage()));
+                .filter(supported -> supported.getLanguage().equalsIgnoreCase(locale.getLanguage()))
+                .min(Comparator.comparing(supported -> supported.getCountry().isEmpty() ? 1 : 0))
+                .orElse(null);
     }
 }

@@ -35,27 +35,27 @@ public class MessageSourceValidator {
      * @return ValidationResult containing all issues found
      */
     public ValidationResult validate() {
-        ValidationResult result = new ValidationResult();
+        ValidationResult.Builder result = ValidationResult.builder();
 
         logger.info("Starting message validation for source type: {}", properties.getType());
         logger.info("Default locale: {}", properties.getDefaultLocale());
 
         if (!(messageSource instanceof MessageSourceKeyProvider keyProvider)) {
             result.addError("MessageSource does not expose translation keys for validation.");
-            return result;
+            return result.build();
         }
 
         TranslationValidationResult coreResult = TranslationValidator.validate(keyProvider);
 
         if (!coreResult.getErrors().isEmpty()) {
             coreResult.getErrors().forEach(result::addError);
-            return result;
+            return result.build();
         }
 
         Set<String> defaultKeys = coreResult.getDefaultKeys();
         if (defaultKeys.isEmpty()) {
             result.addError("Could not load keys for default locale: " + coreResult.getDefaultLocale());
-            return result;
+            return result.build();
         }
 
         logger.info("Found {} keys in default locale file", defaultKeys.size());
@@ -63,7 +63,7 @@ public class MessageSourceValidator {
         List<Locale> locales = keyProvider.getSupportedLocales();
         if (locales == null || locales.isEmpty()) {
             result.addWarning("No supported locales configured");
-            return result;
+            return result.build();
         }
 
         for (Locale locale : locales) {
@@ -85,8 +85,9 @@ public class MessageSourceValidator {
             }
         }
 
-        logger.debug("Validation complete. Errors: {}, Warnings: {}", result.getErrors().size(), result.getWarnings().size());
+        ValidationResult builtResult = result.build();
+        logger.debug("Validation complete. Errors: {}, Warnings: {}", builtResult.getErrors().size(), builtResult.getWarnings().size());
 
-        return result;
+        return builtResult;
     }
 }

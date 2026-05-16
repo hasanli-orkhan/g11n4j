@@ -1,6 +1,5 @@
 package info.md7.g11n4j.spring.boot.validation;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,15 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ValidationResultTests {
 
-    private ValidationResult result;
-
-    @BeforeEach
-    void setUp() {
-        result = new ValidationResult();
-    }
-
     @Test
     void shouldStartEmpty() {
+        ValidationResult result = ValidationResult.builder().build();
+
         assertThat(result.hasErrors()).isFalse();
         assertThat(result.hasWarnings()).isFalse();
         assertThat(result.hasMissingKeys()).isFalse();
@@ -29,7 +23,9 @@ class ValidationResultTests {
 
     @Test
     void shouldAddErrors() {
-        result.addError("Test error");
+        ValidationResult result = ValidationResult.builder()
+                .addError("Test error")
+                .build();
 
         assertThat(result.hasErrors()).isTrue();
         assertThat(result.getErrors()).contains("Test error");
@@ -38,19 +34,22 @@ class ValidationResultTests {
 
     @Test
     void shouldAddWarnings() {
-        result.addWarning("Test warning");
+        ValidationResult result = ValidationResult.builder()
+                .addWarning("Test warning")
+                .build();
 
         assertThat(result.hasWarnings()).isTrue();
         assertThat(result.getWarnings()).contains("Test warning");
-        assertThat(result.isValid()).isTrue(); // warnings don't affect validity
+        assertThat(result.isValid()).isTrue();
     }
 
     @Test
     void shouldAddMissingKeys() {
         Locale locale = Locale.GERMAN;
         Set<String> missingKeys = Set.of("key1", "key2");
-
-        result.addMissingKeys(locale, missingKeys);
+        ValidationResult result = ValidationResult.builder()
+                .addMissingKeys(locale, missingKeys)
+                .build();
 
         assertThat(result.hasMissingKeys()).isTrue();
         assertThat(result.getMissingKeysByLocale()).containsKey(locale);
@@ -62,73 +61,54 @@ class ValidationResultTests {
     void shouldAddExtraKeys() {
         Locale locale = Locale.FRENCH;
         Set<String> extraKeys = Set.of("extra1", "extra2");
-
-        result.addExtraKeys(locale, extraKeys);
+        ValidationResult result = ValidationResult.builder()
+                .addExtraKeys(locale, extraKeys)
+                .build();
 
         assertThat(result.hasExtraKeys()).isTrue();
         assertThat(result.getExtraKeysByLocale()).containsKey(locale);
         assertThat(result.getExtraKeysByLocale().get(locale)).containsAll(extraKeys);
-        assertThat(result.isValid()).isTrue(); // extra keys don't affect validity
+        assertThat(result.isValid()).isTrue();
     }
 
     @Test
     void shouldAddSuccessfulLocales() {
-        result.addSuccess(Locale.GERMAN);
+        ValidationResult result = ValidationResult.builder()
+                .addSuccess(Locale.GERMAN)
+                .build();
 
         assertThat(result.getSuccessfulLocales()).contains(Locale.GERMAN);
     }
 
     @Test
     void shouldCountTotalMissingKeys() {
-        result.addMissingKeys(Locale.GERMAN, Set.of("key1", "key2"));
-        result.addMissingKeys(Locale.FRENCH, Set.of("key3", "key4", "key5"));
+        ValidationResult result = ValidationResult.builder()
+                .addMissingKeys(Locale.GERMAN, Set.of("key1", "key2"))
+                .addMissingKeys(Locale.FRENCH, Set.of("key3", "key4", "key5"))
+                .build();
 
         assertThat(result.getTotalMissingKeysCount()).isEqualTo(5);
     }
 
     @Test
     void shouldCountTotalExtraKeys() {
-        result.addExtraKeys(Locale.GERMAN, Set.of("extra1"));
-        result.addExtraKeys(Locale.FRENCH, Set.of("extra2", "extra3"));
+        ValidationResult result = ValidationResult.builder()
+                .addExtraKeys(Locale.GERMAN, Set.of("extra1"))
+                .addExtraKeys(Locale.FRENCH, Set.of("extra2", "extra3"))
+                .build();
 
         assertThat(result.getTotalExtraKeysCount()).isEqualTo(3);
     }
 
     @Test
-    void shouldBeInvalidWhenHasErrors() {
-        result.addError("Error");
-
-        assertThat(result.isValid()).isFalse();
-    }
-
-    @Test
-    void shouldBeInvalidWhenHasMissingKeys() {
-        result.addMissingKeys(Locale.GERMAN, Set.of("key1"));
-
-        assertThat(result.isValid()).isFalse();
-    }
-
-    @Test
-    void shouldBeValidWithOnlyWarnings() {
-        result.addWarning("Warning");
-
-        assertThat(result.isValid()).isTrue();
-    }
-
-    @Test
-    void shouldBeValidWithOnlyExtraKeys() {
-        result.addExtraKeys(Locale.GERMAN, Set.of("extra1"));
-
-        assertThat(result.isValid()).isTrue();
-    }
-
-    @Test
     void shouldGenerateSummaryWithAllSections() {
-        result.addError("Test error");
-        result.addWarning("Test warning");
-        result.addMissingKeys(Locale.GERMAN, Set.of("key1", "key2"));
-        result.addExtraKeys(Locale.FRENCH, Set.of("extra1"));
-        result.addSuccess(Locale.ITALIAN);
+        ValidationResult result = ValidationResult.builder()
+                .addError("Test error")
+                .addWarning("Test warning")
+                .addMissingKeys(Locale.GERMAN, Set.of("key1", "key2"))
+                .addExtraKeys(Locale.FRENCH, Set.of("extra1"))
+                .addSuccess(Locale.ITALIAN)
+                .build();
 
         String summary = result.getSummary();
 
@@ -143,11 +123,11 @@ class ValidationResultTests {
 
     @Test
     void shouldGenerateSuccessSummary() {
-        result.addSuccess(Locale.GERMAN);
+        ValidationResult result = ValidationResult.builder()
+                .addSuccess(Locale.GERMAN)
+                .build();
 
-        String summary = result.getSummary();
-
-        assertThat(summary).contains("Validation passed");
+        assertThat(result.getSummary()).contains("Validation passed");
     }
 
     @Test
@@ -157,7 +137,9 @@ class ValidationResultTests {
                 "key6", "key7", "key8", "key9", "key10",
                 "key11", "key12"
         );
-        result.addMissingKeys(Locale.GERMAN, manyKeys);
+        ValidationResult result = ValidationResult.builder()
+                .addMissingKeys(Locale.GERMAN, manyKeys)
+                .build();
 
         String summary = result.getSummary();
 
@@ -167,15 +149,16 @@ class ValidationResultTests {
 
     @Test
     void shouldReturnImmutableCollections() {
-        result.addError("Error");
-        result.addWarning("Warning");
-        result.addMissingKeys(Locale.GERMAN, Set.of("key1"));
+        ValidationResult result = ValidationResult.builder()
+                .addError("Error")
+                .addWarning("Warning")
+                .addMissingKeys(Locale.GERMAN, Set.of("key1"))
+                .build();
 
         assertThat(result.getErrors()).isInstanceOf(List.class);
         assertThat(result.getWarnings()).isInstanceOf(List.class);
         assertThat(result.getMissingKeysByLocale()).isInstanceOf(java.util.Map.class);
 
-        // Verify immutability
         assertThat(org.assertj.core.api.Assertions.catchThrowable(() ->
                 result.getErrors().add("new error")
         )).isInstanceOf(UnsupportedOperationException.class);

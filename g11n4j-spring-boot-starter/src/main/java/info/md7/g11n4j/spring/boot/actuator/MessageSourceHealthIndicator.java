@@ -1,11 +1,8 @@
 package info.md7.g11n4j.spring.boot.actuator;
 
-import info.md7.g11n4j.core.source.MessageSource;
 import info.md7.g11n4j.spring.boot.config.G11nProperties;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,15 +19,11 @@ import java.util.Map;
  *   <li>Messages can be retrieved for each locale</li>
  * </ul>
  */
-@Component
-@ConditionalOnClass(name = "org.springframework.boot.actuate.health.HealthIndicator")
 public class MessageSourceHealthIndicator implements HealthIndicator {
 
-    private final MessageSource messageSource;
     private final G11nProperties properties;
 
-    public MessageSourceHealthIndicator(MessageSource messageSource, G11nProperties properties) {
-        this.messageSource = messageSource;
+    public MessageSourceHealthIndicator(G11nProperties properties) {
         this.properties = properties;
     }
 
@@ -48,24 +41,13 @@ public class MessageSourceHealthIndicator implements HealthIndicator {
             // Check supported locales
             List<Locale> locales = properties.getLocales();
             if (locales == null || locales.isEmpty()) {
-                return Health.down()
-                        .withDetail("error", "No supported locales configured")
-                        .withDetails(details)
-                        .build();
+                locales = List.of(properties.getDefaultLocale());
             }
 
             details.put("supportedLocales", locales.stream()
                     .map(Locale::toString)
                     .toList());
             details.put("numberOfLocales", locales.size());
-
-            // Verify message source is accessible
-            if (messageSource == null) {
-                return Health.down()
-                        .withDetail("error", "MessageSource bean is null")
-                        .withDetails(details)
-                        .build();
-            }
 
             return Health.up()
                     .withDetails(details)
