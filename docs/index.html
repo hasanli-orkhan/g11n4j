@@ -3,107 +3,278 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>g11n4j</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #ffffff;
-      --fg: #111827;
-      --muted: #4b5563;
-      --card: #f9fafb;
-      --border: #e5e7eb;
-      --accent: #2563eb;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0b1020;
-        --fg: #f3f4f6;
-        --muted: #9ca3af;
-        --card: #111827;
-        --border: #1f2937;
-        --accent: #60a5fa;
-      }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
-      color: var(--fg);
-      background: var(--bg);
-    }
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 36px 20px 56px;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 2rem;
-    }
-    p {
-      margin: 0 0 14px;
-      color: var(--muted);
-    }
-    section {
-      margin-top: 24px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--card);
-    }
-    h2 {
-      margin: 0 0 10px;
-      font-size: 1.1rem;
-    }
-    ul {
-      margin: 0;
-      padding-left: 20px;
-    }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 0.92em;
-    }
-    .muted { color: var(--muted); }
-    a { color: var(--accent); }
-  </style>
+  <meta name="description" content="g11n4j documentation for Java and Spring Boot internationalization." />
+  <title>g11n4j Documentation</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-<main class="container">
-  <h1>g11n4j</h1>
-  <p>Lightweight internationalization library for Java and Spring Boot.</p>
-  <p class="muted">Locale fallback, ICU4J plural rules, named/indexed placeholders, context-aware resolution, and runtime reload.</p>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#overview">g11n4j</a>
+    <div class="topbar-actions">
+      <a href="https://github.com/hasanli-orkhan/g11n4j" target="_blank" rel="noreferrer">Repository</a>
+      <button id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
+    </div>
+  </div>
+</header>
 
-  <section>
-    <h2>Modules</h2>
-    <ul>
-      <li><code>g11n4j-core</code> - core Java library</li>
-      <li><code>g11n4j-spring-boot-starter</code> - Spring Boot 3.x starter</li>
-      <li><code>g11n4j-spring-boot4-starter</code> - Spring Boot 4.x starter</li>
-    </ul>
-  </section>
+<div class="layout">
+  <aside class="sidebar" aria-label="Documentation sections">
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#modules">Modules</a>
+      <a href="#requirements">Requirements</a>
+      <a href="#formats">Supported Formats</a>
+      <a href="#core-usage">Core Usage</a>
+      <a href="#conventions">Message Conventions</a>
+      <a href="#spring">Spring Boot</a>
+      <a href="#actuator">Actuator</a>
+      <a href="#locale-resolution">Locale Resolution</a>
+      <a href="#properties-encoding">Properties UTF-8</a>
+      <a href="#github-pages">GitHub Pages</a>
+      <a href="#build-test">Build & Test</a>
+    </nav>
+  </aside>
 
-  <section>
-    <h2>Supported formats</h2>
-    <ul>
-      <li><code>YAML</code> (<code>.yml</code>, <code>.yaml</code>)</li>
-      <li><code>PROPERTIES</code> (<code>.properties</code>)</li>
-      <li><code>JSON</code> (<code>.json</code>)</li>
-      <li><code>GETTEXT</code> (<code>.po</code>)</li>
-      <li><code>XLIFF</code> (<code>.xlf</code>, <code>.xliff</code>)</li>
-    </ul>
-  </section>
+  <main class="content">
+    <section id="overview">
+      <h1>g11n4j Documentation</h1>
+      <p>g11n4j is a lightweight internationalization library for Java and Spring Boot.</p>
+      <ul>
+        <li>Locale fallback chain: <code>en_US -&gt; en -&gt; default</code></li>
+        <li>ICU4J-based pluralization rules</li>
+        <li>Named and indexed placeholders: <code>{name}</code>, <code>{0}</code></li>
+        <li>Context-aware keys such as <code>gender.male</code> / <code>gender.female</code></li>
+        <li>Runtime message reload support</li>
+      </ul>
+    </section>
 
-  <section>
-    <h2>Quick start</h2>
-    <p>Add one of these dependencies in your project:</p>
-    <ul>
-      <li><code>info.md7.g11n4j:g11n4j-core:1.0.0</code></li>
-      <li><code>info.md7.g11n4j:g11n4j-spring-boot-starter:1.0.0</code></li>
-      <li><code>info.md7.g11n4j:g11n4j-spring-boot4-starter:1.0.0</code></li>
-    </ul>
-    <p class="muted">See repository README for full configuration and usage details.</p>
-  </section>
-</main>
+    <section id="modules">
+      <h2>Modules</h2>
+      <ul>
+        <li><code>g11n4j-core</code> - core Java library</li>
+        <li><code>g11n4j-spring-boot-starter</code> - Spring Boot 3.x starter</li>
+        <li><code>g11n4j-spring-boot4-starter</code> - Spring Boot 4.x starter</li>
+      </ul>
+    </section>
+
+    <section id="requirements">
+      <h2>Requirements</h2>
+      <ul>
+        <li>Java 21+</li>
+        <li>Maven 3.9+</li>
+      </ul>
+    </section>
+
+    <section id="formats">
+      <h2>Supported Formats</h2>
+      <ul>
+        <li><code>YAML</code> (<code>.yml</code>, <code>.yaml</code>)</li>
+        <li><code>PROPERTIES</code> (<code>.properties</code>)</li>
+        <li><code>JSON</code> (<code>.json</code>)</li>
+        <li><code>GETTEXT</code> (<code>.po</code>)</li>
+        <li><code>XLIFF</code> (<code>.xlf</code>, <code>.xliff</code>)</li>
+      </ul>
+    </section>
+
+    <section id="core-usage">
+      <h2>Core Usage (Plain Java)</h2>
+      <p>Dependency:</p>
+      <pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;info.md7.g11n4j&lt;/groupId&gt;
+  &lt;artifactId&gt;g11n4j-core&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+      <p>Example:</p>
+      <pre><code class="language-java">import info.md7.g11n4j.core.i18n.MessageResolver;
+import info.md7.g11n4j.core.source.YamlMessageSource;
+
+import java.util.List;
+import java.util.Locale;
+
+var source = new YamlMessageSource(
+        "i18n-yaml",
+        "messages",
+        "_",
+        "yml",
+        Locale.ENGLISH,
+        List.of(Locale.ENGLISH, Locale.forLanguageTag("ru"), Locale.forLanguageTag("de")),
+        1000
+);
+
+var resolver = new MessageResolver(source);
+
+String greeting = resolver.get("greeting", Locale.ENGLISH)
+        .withContext("gender", "male")
+        .render("fullName", "John Smith");
+
+String notifications = resolver.getPlural("notification.message.count", 15, Locale.ENGLISH)
+        .render();</code></pre>
+    </section>
+
+    <section id="conventions">
+      <h2>Message Conventions</h2>
+      <ul>
+        <li>Filename format: <code>${fileBaseName}_${locale}.${extension}</code> (for example <code>messages_en.yml</code>)</li>
+        <li>Fallback order: region locale, then language locale, then default locale</li>
+        <li>Context key pattern:
+          <code>greeting.gender.male</code>,
+          <code>greeting.gender.other</code>,
+          <code>greeting._base</code>
+        </li>
+      </ul>
+
+      <p>Plural categories:</p>
+      <table>
+        <thead>
+        <tr>
+          <th>Category</th>
+          <th>Usage</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td><code>zero</code></td><td>Used in languages that distinguish zero</td></tr>
+        <tr><td><code>one</code></td><td>Singular category</td></tr>
+        <tr><td><code>two</code></td><td>Dual category in some languages</td></tr>
+        <tr><td><code>few</code></td><td>Small-count category in some languages</td></tr>
+        <tr><td><code>many</code></td><td>Large-count category in some languages</td></tr>
+        <tr><td><code>other</code></td><td>Required fallback category</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code class="language-yaml">notification:
+  message:
+    count:
+      one: "You have {count} new notification"
+      other: "You have {count} new notifications"</code></pre>
+    </section>
+
+    <section id="spring">
+      <h2>Spring Boot Integration</h2>
+      <p>Spring Boot 3.x dependency:</p>
+      <pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;info.md7.g11n4j&lt;/groupId&gt;
+  &lt;artifactId&gt;g11n4j-spring-boot-starter&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+      <p>Spring Boot 4.x dependency:</p>
+      <pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;info.md7.g11n4j&lt;/groupId&gt;
+  &lt;artifactId&gt;g11n4j-spring-boot4-starter&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+      <p>Configuration:</p>
+      <pre><code class="language-yaml">spring:
+  g11n:
+    enabled: true
+    type: YAML
+    base-directory: classpath:i18n-yaml
+    file-base-name: messages
+    file-extension: yml
+    locale-separator: _
+    default-locale: en
+    locales: [en, ru, de]
+    cache:
+      size: 2000
+      enable-statistics: true
+    validation:
+      enabled: true
+      fail-on-error: false</code></pre>
+
+      <p>Application usage:</p>
+      <pre><code class="language-java">import info.md7.g11n4j.core.i18n.MessageResolver;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+
+@Service
+public class UserMessageService {
+
+    private final MessageResolver messageResolver;
+
+    public UserMessageService(MessageResolver messageResolver) {
+        this.messageResolver = messageResolver;
+    }
+
+    public String welcome(String fullName, Locale locale) {
+        return messageResolver.get("greeting", locale)
+                .withContext("gender", "male")
+                .render("fullName", fullName);
+    }
+}</code></pre>
+    </section>
+
+    <section id="actuator">
+      <h2>Actuator Support</h2>
+      <ul>
+        <li>Health indicator: <code>g11n</code></li>
+        <li>Reload endpoint id: <code>g11n-reload</code></li>
+        <li>Supports reloading all messages or a specific locale</li>
+      </ul>
+
+      <p>Boot 3.x exposure example:</p>
+      <pre><code class="language-properties">management.endpoints.web.exposure.include=health,g11n-reload</code></pre>
+
+      <p>Boot 4.x exposure example:</p>
+      <pre><code class="language-properties">management.endpoints.web.exposure.include=health,g11nreload</code></pre>
+    </section>
+
+    <section id="locale-resolution">
+      <h2>Web Locale Resolution</h2>
+      <p>With Web MVC present, a custom <code>LocaleResolver</code> is auto-configured. Resolution order:</p>
+      <ol>
+        <li><code>?locale=...</code> query parameter</li>
+        <li><code>Accept-Language</code> header</li>
+        <li><code>spring.g11n.default-locale</code></li>
+      </ol>
+    </section>
+
+    <section id="properties-encoding">
+      <h2>Properties UTF-8 Encoding</h2>
+      <p><code>.properties</code> translation files are read as UTF-8. Save them as UTF-8 in your editor or IDE.</p>
+      <p>IntelliJ IDEA path: <code>Settings/Preferences -&gt; Editor -&gt; File Encodings</code></p>
+      <img src="./properties-encoding.png" alt="IntelliJ properties file encoding settings" />
+    </section>
+
+    <section id="github-pages">
+      <h2>GitHub Pages Deployment</h2>
+      <p>This documentation site is deployed from the <code>docs/</code> folder using GitHub Actions.</p>
+      <ul>
+        <li>Workflow file: <code>.github/workflows/pages.yml</code></li>
+        <li>Trigger: pushes to <code>main</code> and manual dispatch</li>
+        <li>Artifact source path: <code>docs</code></li>
+        <li>Deployment action: <code>actions/deploy-pages@v4</code></li>
+      </ul>
+
+      <pre><code class="language-yaml">name: Deploy GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - uses: actions/deploy-pages@v4</code></pre>
+
+      <p>Repository setting required: Pages source should be set to <code>GitHub Actions</code>.</p>
+    </section>
+
+    <section id="build-test">
+      <h2>Build and Test</h2>
+      <pre><code class="language-bash">mvn clean test</code></pre>
+    </section>
+  </main>
+</div>
+
+<script src="./app.js"></script>
 </body>
 </html>
