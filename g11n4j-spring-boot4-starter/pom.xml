@@ -12,6 +12,25 @@
     <groupId>info.md7.g11n4j</groupId>
     <artifactId>g11n4j-spring-boot4-starter</artifactId>
     <packaging>jar</packaging>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <url>https://md7.info</url>
+    <description>g11n4j is a lightweight internationalization library for Java and Spring Boot.</description>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Orkhan Hasanli</name>
+            <email>mail@md7.info</email>
+            <organization>Sonatype</organization>
+            <organizationUrl>https://md7.info</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -90,5 +109,42 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <doclint>none</doclint>
+                    <failOnError>false</failOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

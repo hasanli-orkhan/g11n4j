@@ -8,6 +8,30 @@
     <artifactId>g11n4j</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <url>https://github.com/hasanli-orkhan/g11n4j</url>
+    <description>g11n4j is a lightweight internationalization library for Java and Spring Boot.</description>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/hasanli-orkhan/g11n4j.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/hasanli-orkhan/g11n4j.git</developerConnection>
+        <url>https://github.com/hasanli-orkhan/g11n4j/tree/main</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <modules>
         <module>g11n4j-core</module>
@@ -28,6 +52,10 @@
         <picocli.version>4.7.7</picocli.version>
         <gettext-commons.version>0.9.8</gettext-commons.version>
         <jackson.version>2.18.2</jackson.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
 
         <g11n-core.version>1.0.0</g11n-core.version>
     </properties>
@@ -138,11 +166,46 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
