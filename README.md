@@ -1,103 +1,202 @@
+# g11n4j
+
+Lightweight internationalization library for Java and Spring Boot with:
+- locale fallback (`en_US -> en -> default`)
+- ICU4J plural rules
+- named and indexed placeholders (`{name}`, `{0}`)
+- context-aware resolution (for example `gender.male` vs `gender.female`)
+- runtime reload support
+
 ## Modules
-* `g11n4j-core` - core module for pure Java
-* `g11n4j-spring-boot-starter` - module for Spring Boot 3.x
-* `g11n4j-example` - usage examples of g11n4j library
 
-## Features:
-* Pluralization rules using ICU4J
-* Variable substitution like {name}, {count}
-* Back compatibility support for array of variables like {0}, {1}
-* Locale fallback chain (e.g., en_US → en → default)
-* Spring Boot integration
+- `g11n4j-core` - Core Java library
+- `g11n4j-spring-boot-starter` - Starter for Spring Boot 3.x
+- `g11n4j-spring-boot4-starter` - Starter for Spring Boot 4.x
 
-### Supported formats:
-* `YAML` - YAML Ain't Markup Language (.yaml, .yml)
-* `Properties file` - is mainly used in Java-related technologies to store the configurable parameters of an application (.properties)
-* `Gettext` - is a software internationalization and localization (i18n and l10n) system commonly used for creating multilingual programs, particularly on Unix-like systems (.po)
-* `RDBMS` (MySQL, PostgreSQL, Oracle etc.)
-* `NoSQL` (MongoDB)
-* `TMX` - Translation Memory eXchange is a standard XML-based file format used in the translation industry for storing and exchanging translation memory data
-* `XLIFF` - XML Localization Interchange File Format is a standardized file format used to exchange localization data between tools and systems.
+## Requirements
 
+- Java 21+
+- Maven 3.9+
 
----
-## Pluralization
-| Special keyword | Meaning                               |
-|-----------------|---------------------------------------|
-| zero            | Used in some languages (e.g., Arabic) |
-| one             | Singular form (e.g., 1 notification)  |
-| two             | Dual form (e.g., 2 in Arabic, Hebrew) |
-| few             | For low numbers (e.g., 2-4 in Russian) |
-| many            | For large numbers (e.g., 5+ in Russian) |
-| other           | Fallback/default |
+## Supported message formats
 
-### YAML pluralization example:
+- `YAML` (`.yml`, `.yaml`)
+- `Properties` (`.properties`, UTF-8 supported)
+- `JSON` (`.json`)
+- `Gettext` (`.po`)
+- `XLIFF` (`.xlf`, `.xliff`)
 
-`messages_en.yml`
-```yaml
-notification:
-  message:
-    count:
-      one: "You have {count} unread notification"
-      other: "You have {count} unread notifications"
+## Core usage (plain Java)
+
+```xml
+<dependency>
+  <groupId>info.md7.g11n4j</groupId>
+  <artifactId>g11n4j-core</artifactId>
+  <version>1.0.0</version>
+</dependency>
 ```
 
-Output:
-
-> You have 1 unread notification  
-You have 15 unread notifications
-
-
----
-`messages_ru.yml`
-```yaml
-notification:
-  message:
-    count:
-      one: "У вас {count} непрочитанное уведомление"
-      few: "У вас {count} непрочитанных уведомления"
-      many: "У вас {count} непрочитанных уведомлений"
-```
-
-Output:
-
->У вас 1 непрочитанное уведомление  
-У вас 2 непрочитанных уведомления  
-У вас 5 непрочитанных уведомлений  
-У вас 91 непрочитанное уведомление  
-У вас 86 непрочитанных уведомлений  
-У вас 73 непрочитанных уведомления
-
-## Spring Boot integration example:
-* Add `g11n4j-spring-boot-starter` dependency to the classpath 
-* Inject MessageResolver bean to your code like:
 ```java
+import info.md7.g11n4j.core.i18n.MessageResolver;
+import info.md7.g11n4j.core.source.YamlMessageSource;
+
+import java.util.List;
+import java.util.Locale;
+
+var source = new YamlMessageSource(
+        "i18n-yaml",    // or classpath:i18n-yaml
+        "messages",     // messages_en.yml, messages_ru.yml, ...
+        "_",
+        "yml",
+        Locale.ENGLISH,
+        List.of(Locale.ENGLISH, Locale.forLanguageTag("ru"), Locale.forLanguageTag("de")),
+        1000
+);
+
+var resolver = new MessageResolver(source);
+
+String greeting = resolver.get("greeting", Locale.ENGLISH)
+        .withContext("gender", "male")
+        .render("fullName", "John Smith");
+
+String notifications = resolver.getPlural("notification.message.count", 15, Locale.ENGLISH)
+        .render();
+```
+
+## Message conventions
+
+- Naming: `${fileBaseName}_${locale}.${extension}` (for example `messages_en.yml`)
+- Locale chain: region -> language -> default locale
+- Context keys:
+  - specific: `greeting.gender.male`
+  - fallback: `greeting.gender.other`
+  - base: `greeting._base`
+
+Plural keys use CLDR categories:
+- `zero`, `one`, `two`, `few`, `many`, `other`
+
+Example:
+
+```yaml
+notification:
+  message:
+    count:
+      one: "You have {count} new notification"
+      other: "You have {count} new notifications"
+```
+
+## Spring Boot integration
+
+### Dependency
+
+For Spring Boot 3.x:
+
+```xml
+<dependency>
+  <groupId>info.md7.g11n4j</groupId>
+  <artifactId>g11n4j-spring-boot-starter</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+For Spring Boot 4.x:
+
+```xml
+<dependency>
+  <groupId>info.md7.g11n4j</groupId>
+  <artifactId>g11n4j-spring-boot4-starter</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+### Configuration
+
+```yaml
+spring:
+  g11n:
+    enabled: true
+    type: YAML                # YAML | PROPERTIES | JSON | GETTEXT | XLIFF
+    base-directory: classpath:i18n-yaml
+    file-base-name: messages
+    file-extension: yml
+    locale-separator: _
+    default-locale: en
+    locales: [en, ru, de]
+    cache:
+      size: 2000
+      enable-statistics: true
+    validation:
+      enabled: true
+      fail-on-error: false
+```
+
+### Use in application code
+
+```java
+import info.md7.g11n4j.core.i18n.MessageResolver;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+
 @Service
-public class UserServiceImpl implements UserService {
-    
-    @Autowired
-    private MessageResolver messageResolver;
-    
-    // omitted for brevity ...
+public class UserMessageService {
+
+    private final MessageResolver messageResolver;
+
+    public UserMessageService(MessageResolver messageResolver) {
+        this.messageResolver = messageResolver;
+    }
+
+    public String welcome(String fullName, Locale locale) {
+        return messageResolver.get("greeting", locale)
+                .withContext("gender", "male")
+                .render("fullName", fullName);
+    }
 }
 ```
 
----
-> Check unit tests under `src/test` folder for usage examples
+## Actuator support
 
-## Troubleshooting:
+When actuator is on classpath and endpoint exposure is enabled:
 
----
-### Internationalization (`i18n`) and `.properties` Files
-To ensure our application supports multiple languages correctly, all `.properties` files containing text (especially for translations) **must be saved with UTF-8 encoding**.
-#### Why UTF-8?
-The default encoding for `.properties` files in older Java versions was ISO-8859-1, which cannot store characters for many languages (e.g., Cyrillic, Greek, Chinese). Using UTF-8 allows us to write translations directly in any language without needing special escape sequences.
-#### How to Work with Properties Files
-Always ensure your text editor or IDE is configured to save `.properties` files as **UTF-8**.
-* In IntelliJ IDEA, you can set this in `Settings/Preferences > Editor > File Encodings` > `Default encoding for properties files`
+- Health indicator: `g11n`
+- Reload endpoint id: `g11n-reload`
+  - reload all
+  - reload a specific locale
+
+Typical setup (Boot 3.x):
+
+```properties
+management.endpoints.web.exposure.include=health,g11n-reload
+```
+
+Typical setup (Boot 4.x):
+
+```properties
+management.endpoints.web.exposure.include=health,g11nreload
+```
+
+## Web locale resolution
+
+With Web MVC starter present, a `LocaleResolver` is auto-configured.
+
+Resolution order:
+1. `?locale=...` query parameter
+2. `Accept-Language` header
+3. `spring.g11n.default-locale`
+
+## Properties files and UTF-8
+
+`.properties` files are read as UTF-8. Save translation files as UTF-8 in your IDE/editor.
+
+In IntelliJ IDEA:
+- `Settings/Preferences -> Editor -> File Encodings`
+- set properties encoding to UTF-8
 
 ![properties file encoding](properties-encoding.png "properties file encoding")
 
----
-## Useful links:
-* [PoEdit](https://poedit.net/) - Poedit provides translators and developers with a powerful and intuitive editor for many file formats: gettext/PO, XLIFF, JSON or Flutter.
+## Build and test
+
+```bash
+mvn clean test
+```
