@@ -29,7 +29,7 @@ public class YamlMessageSourceTests {
 
     @Test
     void propertiesAreLoadedFromCustomFile() {
-        assertThat(g11nProperties.getBaseDirectory()).isEqualTo("i18n-yaml");
+        assertThat(g11nProperties.getBaseDirectory()).isEqualTo("classpath:i18n-yaml");
         assertThat(g11nProperties.getType()).isEqualTo(SourceType.YAML);
     }
 

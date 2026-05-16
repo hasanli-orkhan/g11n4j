@@ -13,6 +13,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
     private static final String BASE_SUFFIX = "._base";
     private static final String OTHER_SUFFIX = ".other";
     private static final int DEFAULT_CACHE_SIZE = 1000;
+    private static final String CLASSPATH_PREFIX = "classpath:";
 
     protected final Map<Locale, Map<String, String>> messages = new ConcurrentHashMap<>();
     private final Map<Locale, List<Locale>> fallbackChainCache = new ConcurrentHashMap<>();
@@ -82,7 +83,7 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
             throw new IllegalArgumentException("supportedLocales cannot be null or empty");
         }
 
-        this.baseDirectory = baseDirectory;
+        this.baseDirectory = normalizeBaseDirectory(baseDirectory);
         this.fileBaseName = fileBaseName;
         this.localeSeparator = localeSeparator;
         this.fileExtension = fileExtension;
@@ -90,6 +91,25 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         this.supportedLocales = List.copyOf(supportedLocales);
         this.messageCache = new MessageCache(cacheSize);
         loadMessages();
+    }
+
+    private String normalizeBaseDirectory(String configuredBaseDirectory) {
+        String normalized = configuredBaseDirectory.trim();
+
+        if (normalized.startsWith(CLASSPATH_PREFIX)) {
+            normalized = normalized.substring(CLASSPATH_PREFIX.length());
+        }
+        while (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        while (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException("baseDirectory cannot be blank after normalization");
+        }
+        return normalized;
     }
 
     protected abstract void loadMessages();

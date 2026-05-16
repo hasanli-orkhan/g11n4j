@@ -1,6 +1,6 @@
 spring:
   g11n:
-    base-directory: i18n-yaml #classpath:i18n todo use classpath
+    base-directory: classpath:i18n-yaml
     file-base-name: messages
     file-extension: yml
     locale-separator: _
