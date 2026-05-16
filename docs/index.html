@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>g11n4j</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #111827;
+      --muted: #4b5563;
+      --card: #f9fafb;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1020;
+        --fg: #f3f4f6;
+        --muted: #9ca3af;
+        --card: #111827;
+        --border: #1f2937;
+        --accent: #60a5fa;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      color: var(--fg);
+      background: var(--bg);
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 36px 20px 56px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+    section {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+    .muted { color: var(--muted); }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main class="container">
+  <h1>g11n4j</h1>
+  <p>Lightweight internationalization library for Java and Spring Boot.</p>
+  <p class="muted">Locale fallback, ICU4J plural rules, named/indexed placeholders, context-aware resolution, and runtime reload.</p>
+
+  <section>
+    <h2>Modules</h2>
+    <ul>
+      <li><code>g11n4j-core</code> - core Java library</li>
+      <li><code>g11n4j-spring-boot-starter</code> - Spring Boot 3.x starter</li>
+      <li><code>g11n4j-spring-boot4-starter</code> - Spring Boot 4.x starter</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Supported formats</h2>
+    <ul>
+      <li><code>YAML</code> (<code>.yml</code>, <code>.yaml</code>)</li>
+      <li><code>PROPERTIES</code> (<code>.properties</code>)</li>
+      <li><code>JSON</code> (<code>.json</code>)</li>
+      <li><code>GETTEXT</code> (<code>.po</code>)</li>
+      <li><code>XLIFF</code> (<code>.xlf</code>, <code>.xliff</code>)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Quick start</h2>
+    <p>Add one of these dependencies in your project:</p>
+    <ul>
+      <li><code>info.md7.g11n4j:g11n4j-core:1.0.0</code></li>
+      <li><code>info.md7.g11n4j:g11n4j-spring-boot-starter:1.0.0</code></li>
+      <li><code>info.md7.g11n4j:g11n4j-spring-boot4-starter:1.0.0</code></li>
+    </ul>
+    <p class="muted">See repository README for full configuration and usage details.</p>
+  </section>
+</main>
+</body>
+</html>
