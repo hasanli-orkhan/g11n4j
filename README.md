@@ -130,6 +130,25 @@ spring:
       fail-on-error: false
 ```
 
+### Spring Boot configuration reference
+
+All supported starter parameters:
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `spring.g11n.enabled` | `boolean` | `true` | Master switch for g11n4j auto-configuration. |
+| `spring.g11n.type` | `enum` | `PROPERTIES` | Message source type: `YAML`, `PROPERTIES`, `JSON`, `GETTEXT`, `XLIFF`. |
+| `spring.g11n.base-directory` | `String` | `i18n` | Base directory for translation files (`classpath:` prefix is supported). |
+| `spring.g11n.file-base-name` | `String` | `messages` | Base filename used before locale and extension. |
+| `spring.g11n.file-extension` | `String` | `properties` | Translation file extension. Must match selected type. If type is not `PROPERTIES` and this remains `properties`, starter auto-selects the first extension for that type. |
+| `spring.g11n.locale-separator` | `String` | `_` | Separator in filenames, for example `messages_en.properties`. |
+| `spring.g11n.default-locale` | `Locale` | `en` | Default fallback locale. |
+| `spring.g11n.locales` | `List<Locale>` | `[default-locale]` | Supported locales list. If empty, only default locale is used. |
+| `spring.g11n.cache.size` | `int` | `1000` | Maximum cache entries for resolved messages (must be positive). |
+| `spring.g11n.cache.enable-statistics` | `boolean` | `false` | Enables cache statistics collection. |
+| `spring.g11n.validation.enabled` | `boolean` | `true` | Enables startup translation validation. |
+| `spring.g11n.validation.fail-on-error` | `boolean` | `false` | If `true`, startup fails on validation errors; otherwise logs and continues. |
+
 ### Use in application code
 
 ```java

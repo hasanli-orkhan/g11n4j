@@ -28,6 +28,7 @@
       <a href="#core-usage">Core Usage</a>
       <a href="#conventions">Message Conventions</a>
       <a href="#spring">Spring Boot</a>
+      <a href="#spring-config-params">Spring Config Params</a>
       <a href="#actuator">Actuator</a>
       <a href="#locale-resolution">Locale Resolution</a>
       <a href="#properties-encoding">Properties UTF-8</a>
@@ -203,6 +204,116 @@ public class UserMessageService {
                 .render("fullName", fullName);
     }
 }</code></pre>
+    </section>
+
+    <section id="spring-config-params">
+      <h2>Spring Boot Configuration Parameters</h2>
+      <p>Complete reference for all <code>spring.g11n.*</code> properties used by the starters.</p>
+      <table>
+        <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><code>spring.g11n.enabled</code></td>
+          <td><code>boolean</code></td>
+          <td><code>true</code></td>
+          <td>Master switch for g11n4j auto-configuration. When <code>false</code>, message source, resolver, validation runner, web resolver, and actuator integration are not auto-configured.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.type</code></td>
+          <td><code>enum</code></td>
+          <td><code>PROPERTIES</code></td>
+          <td>Message source format. Allowed values: <code>YAML</code>, <code>PROPERTIES</code>, <code>JSON</code>, <code>GETTEXT</code>, <code>XLIFF</code>.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.base-directory</code></td>
+          <td><code>String</code></td>
+          <td><code>i18n</code></td>
+          <td>Base directory for translation files. Supports plain paths and <code>classpath:</code> prefix (for example <code>classpath:i18n-yaml</code>).</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.file-base-name</code></td>
+          <td><code>String</code></td>
+          <td><code>messages</code></td>
+          <td>Filename base used before locale and extension. Example pattern: <code>messages_en.yml</code>.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.file-extension</code></td>
+          <td><code>String</code></td>
+          <td><code>properties</code></td>
+          <td>File extension for translation files. Must match selected source type (for example <code>yml</code>/<code>yaml</code> for <code>YAML</code>, <code>po</code> for <code>GETTEXT</code>, <code>xlf</code>/<code>xliff</code> for <code>XLIFF</code>). If type is not <code>PROPERTIES</code> and this value is left at default <code>properties</code>, starter auto-selects the first extension for that type.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.locale-separator</code></td>
+          <td><code>String</code></td>
+          <td><code>_</code></td>
+          <td>Separator between file base name and locale code in filenames. Example: <code>messages_en.properties</code>.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.default-locale</code></td>
+          <td><code>Locale</code></td>
+          <td><code>en</code></td>
+          <td>Default locale used by fallback resolution when a specific locale key is not found.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.locales</code></td>
+          <td><code>List&lt;Locale&gt;</code></td>
+          <td><code>[default-locale]</code></td>
+          <td>Supported locales for loading and resolution. If omitted or empty, starter uses only <code>spring.g11n.default-locale</code>.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.cache.size</code></td>
+          <td><code>int</code></td>
+          <td><code>1000</code></td>
+          <td>Maximum in-memory cache entries for resolved messages. Must be a positive number.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.cache.enable-statistics</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>Enables internal cache statistics collection for diagnostics.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.validation.enabled</code></td>
+          <td><code>boolean</code></td>
+          <td><code>true</code></td>
+          <td>Enables startup validation of message files across configured locales.</td>
+        </tr>
+        <tr>
+          <td><code>spring.g11n.validation.fail-on-error</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>When validation is enabled, controls startup behavior on validation failures. <code>true</code> fails application startup; <code>false</code> logs warnings and continues.</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <p>Example with all parameters:</p>
+      <pre><code class="language-yaml">spring:
+  g11n:
+    enabled: true
+    type: YAML
+    base-directory: classpath:i18n-yaml
+    file-base-name: messages
+    file-extension: yml
+    locale-separator: _
+    default-locale: en
+    locales:
+      - en
+      - ru
+      - de
+    cache:
+      size: 2000
+      enable-statistics: true
+    validation:
+      enabled: true
+      fail-on-error: false</code></pre>
     </section>
 
     <section id="actuator">
