@@ -219,3 +219,10 @@ In IntelliJ IDEA:
 ```bash
 mvn clean test
 ```
+
+## Documentation deployment
+
+The static documentation site lives in `docs/`.
+
+- GitHub Pages deployment is configured in `.github/workflows/pages.yml`.
+- GitLab Pages deployment is configured in `.gitlab-ci.yml` (`deploy-pages` job).
