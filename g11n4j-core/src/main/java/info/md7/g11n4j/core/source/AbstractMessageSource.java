@@ -178,12 +178,16 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         String language = locale.getLanguage();
         String country = locale.getCountry();
 
-        List<String> candidates = new ArrayList<>(2);
+        List<String> candidates = new ArrayList<>(3);
         if (language != null && !language.isEmpty()) {
             if (country != null && !country.isEmpty()) {
                 candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + localeSeparator + country + "." + fileExtension);
             }
             candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + "." + fileExtension);
+        }
+        String bareFilename = baseDirectory + "/" + fileBaseName + "." + fileExtension;
+        if (!candidates.contains(bareFilename)) {
+            candidates.add(bareFilename);
         }
         return Collections.unmodifiableList(candidates);
     }
