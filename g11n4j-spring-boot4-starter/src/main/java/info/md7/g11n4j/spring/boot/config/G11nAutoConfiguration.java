@@ -36,13 +36,14 @@ public class G11nAutoConfiguration {
         String localeSeparator = properties.getLocaleSeparator();
         String fileExtension = resolveFileExtension(sourceType);
         Locale defaultLocale = properties.getDefaultLocale();
+        List<String> additionalDirectories = properties.getAdditionalDirectories();
 
         return switch (sourceType) {
-            case YAML -> new YamlMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, cacheSize);
-            case PROPERTIES -> new PropertiesMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, cacheSize);
-            case JSON -> new JsonMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, cacheSize);
-            case GETTEXT -> new GettextMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, cacheSize);
-            case XLIFF -> new XliffMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, cacheSize);
+            case YAML -> new YamlMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, additionalDirectories, cacheSize);
+            case PROPERTIES -> new PropertiesMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, additionalDirectories, cacheSize);
+            case JSON -> new JsonMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, additionalDirectories, cacheSize);
+            case GETTEXT -> new GettextMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, additionalDirectories, cacheSize);
+            case XLIFF -> new XliffMessageSource(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, locales, additionalDirectories, cacheSize);
         };
     }
 

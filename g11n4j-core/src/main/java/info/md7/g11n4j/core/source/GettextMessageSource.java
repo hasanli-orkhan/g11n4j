@@ -30,6 +30,27 @@ public class GettextMessageSource extends AbstractMessageSource {
         validateSupportedExtension(SourceType.GETTEXT, fileExtension);
     }
 
+    public GettextMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories);
+        validateSupportedExtension(SourceType.GETTEXT, fileExtension);
+    }
+
+    public GettextMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories, cacheSize);
+        validateSupportedExtension(SourceType.GETTEXT, fileExtension);
+    }
+
     @Override
     protected Map<String, String> parseMessageFile(InputStream is) {
         return parseGettextFile(is);

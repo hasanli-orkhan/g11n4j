@@ -32,6 +32,27 @@ public class JsonMessageSource extends AbstractMessageSource {
         validateSupportedExtension(SourceType.JSON, fileExtension);
     }
 
+    public JsonMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories);
+        validateSupportedExtension(SourceType.JSON, fileExtension);
+    }
+
+    public JsonMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories, cacheSize);
+        validateSupportedExtension(SourceType.JSON, fileExtension);
+    }
+
     @Override
     protected Map<String, String> parseMessageFile(InputStream is) throws Exception {
         Map<String, Object> jsonMap = OBJECT_MAPPER.readValue(is, new TypeReference<Map<String, Object>>() {});

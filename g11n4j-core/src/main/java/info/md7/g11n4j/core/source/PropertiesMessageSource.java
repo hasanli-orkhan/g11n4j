@@ -33,6 +33,27 @@ public class PropertiesMessageSource extends AbstractMessageSource {
         validateSupportedExtension(SourceType.PROPERTIES, fileExtension);
     }
 
+    public PropertiesMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories);
+        validateSupportedExtension(SourceType.PROPERTIES, fileExtension);
+    }
+
+    public PropertiesMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories, cacheSize);
+        validateSupportedExtension(SourceType.PROPERTIES, fileExtension);
+    }
+
     @Override
     protected Map<String, String> parseMessageFile(InputStream is) throws IOException {
         Properties properties = new Properties();

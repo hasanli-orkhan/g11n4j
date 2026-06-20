@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,6 +51,14 @@ public class G11nProperties {
      */
     @NotBlank
     private String baseDirectory = "i18n";
+
+    /**
+     * Sub-paths under {@link #baseDirectory} whose message files are merged on top of the base
+     * directory's files. For each locale the best-matching file from the base directory is loaded
+     * first, then each entry in this list (in declared order) is merged over it, so later entries
+     * override earlier ones on key conflict (base directory has the lowest priority). Default: empty.
+     */
+    private List<String> additionalDirectories = new ArrayList<>();
 
     /**
      * Base name for message files. Default: messages
@@ -151,6 +160,14 @@ public class G11nProperties {
 
     public void setBaseDirectory(String baseDirectory) {
         this.baseDirectory = baseDirectory;
+    }
+
+    public List<String> getAdditionalDirectories() {
+        return additionalDirectories;
+    }
+
+    public void setAdditionalDirectories(List<String> additionalDirectories) {
+        this.additionalDirectories = additionalDirectories;
     }
 
     public String getFileBaseName() {

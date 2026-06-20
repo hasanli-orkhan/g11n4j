@@ -53,19 +53,46 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
      */
     protected final List<Locale> supportedLocales;
 
+    /**
+     * Additional sub-directories (relative to {@link #baseDirectory}) whose message files are
+     * merged on top of the base directory. Later entries override earlier ones on key conflict.
+     */
+    protected final List<String> additionalDirectories;
+
     public AbstractMessageSource(
             String baseDirectory, String fileBaseName,
             String localeSeparator, String fileExtension,
             Locale defaultLocale, List<Locale> supportedLocales
     ) {
         this(baseDirectory, fileBaseName, localeSeparator, fileExtension,
-             defaultLocale, supportedLocales, DEFAULT_CACHE_SIZE);
+             defaultLocale, supportedLocales, List.of(), DEFAULT_CACHE_SIZE);
     }
 
     public AbstractMessageSource(
             String baseDirectory, String fileBaseName,
             String localeSeparator, String fileExtension,
             Locale defaultLocale, List<Locale> supportedLocales,
+            int cacheSize
+    ) {
+        this(baseDirectory, fileBaseName, localeSeparator, fileExtension,
+             defaultLocale, supportedLocales, List.of(), cacheSize);
+    }
+
+    public AbstractMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        this(baseDirectory, fileBaseName, localeSeparator, fileExtension,
+             defaultLocale, supportedLocales, additionalDirectories, DEFAULT_CACHE_SIZE);
+    }
+
+    public AbstractMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
             int cacheSize
     ) {
         if (baseDirectory == null || baseDirectory.trim().isEmpty()) {
@@ -93,8 +120,23 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
         this.fileExtension = fileExtension;
         this.defaultLocale = defaultLocale;
         this.supportedLocales = List.copyOf(supportedLocales);
+        this.additionalDirectories = normalizeAdditionalDirectories(additionalDirectories);
         this.messageCache = new MessageCache(cacheSize);
         reloadAllMessages();
+    }
+
+    private List<String> normalizeAdditionalDirectories(List<String> configuredDirectories) {
+        if (configuredDirectories == null || configuredDirectories.isEmpty()) {
+            return List.of();
+        }
+        List<String> normalized = new ArrayList<>(configuredDirectories.size());
+        for (String directory : configuredDirectories) {
+            if (directory == null || directory.trim().isEmpty()) {
+                continue;
+            }
+            normalized.add(normalizeBaseDirectory(directory));
+        }
+        return List.copyOf(normalized);
     }
 
     private String normalizeBaseDirectory(String configuredBaseDirectory) {
@@ -175,17 +217,21 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
     }
 
     protected List<String> buildCandidateFilenames(Locale locale) {
+        return buildCandidateFilenames(baseDirectory, locale);
+    }
+
+    protected List<String> buildCandidateFilenames(String directory, Locale locale) {
         String language = locale.getLanguage();
         String country = locale.getCountry();
 
         List<String> candidates = new ArrayList<>(3);
         if (language != null && !language.isEmpty()) {
             if (country != null && !country.isEmpty()) {
-                candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + localeSeparator + country + "." + fileExtension);
+                candidates.add(directory + "/" + fileBaseName + localeSeparator + language + localeSeparator + country + "." + fileExtension);
             }
-            candidates.add(baseDirectory + "/" + fileBaseName + localeSeparator + language + "." + fileExtension);
+            candidates.add(directory + "/" + fileBaseName + localeSeparator + language + "." + fileExtension);
         }
-        String bareFilename = baseDirectory + "/" + fileBaseName + "." + fileExtension;
+        String bareFilename = directory + "/" + fileBaseName + "." + fileExtension;
         if (!candidates.contains(bareFilename)) {
             candidates.add(bareFilename);
         }
@@ -403,18 +449,34 @@ public abstract class AbstractMessageSource implements MessageSource, MessageSou
     }
 
     private Optional<Map<String, String>> tryLoadLocaleMessages(Locale locale) {
-        for (String filename : buildCandidateFilenames(locale)) {
-            try (InputStream is = openResource(filename)) {
-                if (is == null) {
-                    continue;
+        Map<String, String> merged = new LinkedHashMap<>();
+        boolean anyFound = false;
+
+        List<String> directories = new ArrayList<>(1 + additionalDirectories.size());
+        directories.add(baseDirectory);
+        for (String additionalDirectory : additionalDirectories) {
+            directories.add(baseDirectory + "/" + additionalDirectory);
+        }
+
+        for (String directory : directories) {
+            for (String filename : buildCandidateFilenames(directory, locale)) {
+                try (InputStream is = openResource(filename)) {
+                    if (is == null) {
+                        continue;
+                    }
+                    Map<String, String> parsed = parseMessageFile(is);
+                    if (parsed != null) {
+                        merged.putAll(parsed);
+                    }
+                    anyFound = true;
+                    break;
+                } catch (Exception e) {
+                    throw new MessageLoadException(filename, e);
                 }
-                Map<String, String> parsed = parseMessageFile(is);
-                return Optional.of(toImmutableMap(parsed));
-            } catch (Exception e) {
-                throw new MessageLoadException(filename, e);
             }
         }
-        return Optional.empty();
+
+        return anyFound ? Optional.of(toImmutableMap(merged)) : Optional.empty();
     }
 
     private InputStream openResource(String filename) {

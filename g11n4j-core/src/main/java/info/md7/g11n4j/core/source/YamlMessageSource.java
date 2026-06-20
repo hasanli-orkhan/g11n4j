@@ -31,6 +31,27 @@ public class YamlMessageSource extends AbstractMessageSource {
         validateSupportedExtension(SourceType.YAML, fileExtension);
     }
 
+    public YamlMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories);
+        validateSupportedExtension(SourceType.YAML, fileExtension);
+    }
+
+    public YamlMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories, cacheSize);
+        validateSupportedExtension(SourceType.YAML, fileExtension);
+    }
+
     @Override
     protected Map<String, String> parseMessageFile(InputStream is) {
         Map<String, Object> yamlMap = YAML.load(is);

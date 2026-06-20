@@ -35,6 +35,27 @@ public class XliffMessageSource extends AbstractMessageSource {
         validateSupportedExtension(SourceType.XLIFF, fileExtension);
     }
 
+    public XliffMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories);
+        validateSupportedExtension(SourceType.XLIFF, fileExtension);
+    }
+
+    public XliffMessageSource(
+            String baseDirectory, String fileBaseName,
+            String localeSeparator, String fileExtension,
+            Locale defaultLocale, List<Locale> supportedLocales,
+            List<String> additionalDirectories,
+            int cacheSize
+    ) {
+        super(baseDirectory, fileBaseName, localeSeparator, fileExtension, defaultLocale, supportedLocales, additionalDirectories, cacheSize);
+        validateSupportedExtension(SourceType.XLIFF, fileExtension);
+    }
+
     @Override
     protected Map<String, String> parseMessageFile(InputStream is) throws Exception {
         DocumentBuilderFactory factory = createSecureDocumentBuilderFactory();
